@@ -13,6 +13,7 @@ import {
     TextInput,
     useLogin,
     email,
+    useUnique
 } from "react-admin";
 import { useRecordContext} from "react-admin";
 import { useNotify, useRedirect, useRefresh} from "react-admin";
@@ -43,8 +44,8 @@ export const PostEdit = () => {
         const notify = useNotify();
         const refresh = useRefresh();
         const redirect = useRedirect();
-        const isLoading = useAuthState();
-        if(isLoading) return <Loading />;
+        //const isLoading = useAuthState();
+        //if(isLoading) return <Loading />;
         
         const onSuccess = () => {
         notify('Post actualizado');
@@ -70,9 +71,7 @@ export const PostCreate = () => {
     const notify = useNotify();
     const refresh = useRefresh();
     const redirect = useRedirect();
-    const isLoading = useAuthState();
-    if(isLoading) return <Loading />;
-
+    const unique = useUnique();
 
     const onSuccess = () => {
         notify('Post creado');
@@ -84,7 +83,7 @@ export const PostCreate = () => {
         <Create mutationOptions = {{onSuccess}} >
         <SimpleForm>
            <ReferenceInput source="userId" reference="users" />
-           <TextInput source="titulo" />
+           <TextInput source="titulo" validate={unique()} /> 
           <TextInput source="contenido" multiline rows={5} />
          </SimpleForm>
        </Create>
