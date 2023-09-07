@@ -11,11 +11,12 @@ import { AlbumCreate, AlbumEdit, AlbumList } from "./album";
 import {i18nProvider} from "./i18nProvider";
 import { MyAppBar } from './MyAppBar';
 import { Layout } from 'react-admin';
+import MyLoginPage from './MyLoginPage';
 
 const MyLayout = (props: any) => <Layout {...props} appBar={MyAppBar} />;
 
 export const App = () => (
-  <Admin layout={MyLayout}  darkTheme={{ palette: { mode: 'dark' } }} authProvider={authProvider} dataProvider={dataProvider} dashboard={Dashboard}  i18nProvider={i18nProvider}>
+  <Admin layout={MyLayout}  darkTheme={{ palette: { mode: 'dark' } }} loginPage={MyLoginPage} authProvider={authProvider} dataProvider={dataProvider} dashboard={Dashboard}  i18nProvider={i18nProvider}>
       <Resource 
           name="posts"
           list={PostList}
