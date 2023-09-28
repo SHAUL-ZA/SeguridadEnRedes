@@ -44,8 +44,9 @@ sistema/backend/package-lock.json
 sistema/test-admin/node_modules/
 sistema/test-admin/package-lock.json
 hooks/test-admin/node_modules/
+test-admin/node_modules/
 
-
+node_modules/
 jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)
