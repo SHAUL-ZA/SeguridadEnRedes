@@ -44,7 +44,7 @@ export const PostEdit = () => {
         const notify = useNotify();
         const refresh = useRefresh();
         const redirect = useRedirect();
-        //const isLoading = useAuthState();
+        //¿const isLoading = useAuthState();
         //if(isLoading) return <Loading />;
         
         const onSuccess = () => {

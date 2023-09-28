@@ -13,9 +13,6 @@ export function MyAppBar(){
         <span className={idle ? "idle" : ""}/>
         <CardContent>{idle ? "Inactivo" : "Activo"}</CardContent>
     </AppBar>
-    )
-    ;
-    
-    
-    };
+    );
+};
  

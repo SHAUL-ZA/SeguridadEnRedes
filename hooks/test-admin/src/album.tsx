@@ -17,9 +17,9 @@ import { useNotify, useRedirect, useRefresh} from "react-admin";
 
 
 
-const AlbumTitle = () =>{
+export const AlbumTitle = () =>{
     const record =useRecordContext();
-    return <span>Post {record ? `"${record.title}"`:''}</span>;
+    return <span role="select">Post{record ? `"${record.title}"`:''}</span>;
 }
 
 export const AlbumList = () => (
