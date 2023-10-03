@@ -2,7 +2,7 @@
 import * as React from "react";
 import { useState } from "react";
 import { useLogin, useNotify, Notification } from "react-admin";
-import { Button } from "@mui/material";
+import { Button, Container } from "@mui/material";
 
 const MyLoginPage = ({}) => {
   const [email, setEmail] = useState("");
@@ -17,23 +17,25 @@ const MyLoginPage = ({}) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        name="email"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        name="password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <Button variant="contained" onClick={handleSubmit}>
-        Login
-      </Button>
-    </form>
+    <Container maxWidth="xl">
+      <form onSubmit={handleSubmit}>
+        <input
+          name="email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          name="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Button variant="contained" onClick={handleSubmit}>
+          Login
+        </Button>
+      </form>
+    </Container>
   );
 };
 
