@@ -17,9 +17,9 @@ const MyLayout = (props: any) => <Layout {...props} appBar={MyAppBar} />;
 
 export const App = () => (
   <Admin
+    loginPage={MyLoginPage}  
     layout={MyLayout}
-    darkTheme={{ palette: { mode: "dark" } }}
-    loginPage={MyLoginPage}
+    darkTheme={{ palette: { mode: "dark" } }} 
     authProvider={authProvider}
     dataProvider={dataProvider}
     dashboard={Dashboard}
