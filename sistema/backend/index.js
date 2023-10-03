@@ -33,10 +33,10 @@ app.get("/tickets", async (req, res) => {
     try{
         let token = req.res("Authentication");
         let verifiedToken = await jwt.verify(token, "secretKey");
-        let authData = await db.collection("users").findOne({"users": verifiedToken.user});
+        let authData = await db.collection("usuarios").findOne({"usuario": verifiedToken.user});
         let parameterFind = {};
         if(authData.permissions == "2"){ //Si es un usuario coordinador nacinal es 2
-            parameterFind = ["users"] = verifiedToken.user;
+            parameterFind["usuario"] = verifiedToken.user;
         }
 
         if("_sort" in req.query){
