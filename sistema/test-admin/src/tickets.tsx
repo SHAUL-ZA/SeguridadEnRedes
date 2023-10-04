@@ -26,7 +26,7 @@ import { useAuthState, Loading } from "react-admin";
 import { useState, useEffect } from "react";
 import { clasificacion, incidencias } from "./utilidades";
 
-const PostTitle = () => {
+const TicketTitle = () => {
   const record = useRecordContext();
   return <span>Post {record ? `"${record.title}"` : ""}</span>;
 };
@@ -36,7 +36,7 @@ const postFilters = [
   <ReferenceInput source="userId" label="Usuario" reference="users" />,
 ];
 
-export const PostList = () => (
+export const TicketList = () => (
   <List filters={postFilters}>
     <Datagrid>
       <TextField source="id" />
@@ -47,7 +47,7 @@ export const PostList = () => (
   </List>
 );
 
-export const PostEdit = () => {
+export const TicketEdit = () => {
   const notify = useNotify();
   const refresh = useRefresh();
   const redirect = useRedirect();
@@ -76,7 +76,7 @@ export const PostEdit = () => {
   }, [clasificacionSeleccionada]);
 
   return (
-    <Edit title={<PostTitle />} mutationOptions={{ onSuccess }}>
+    <Edit title={<TicketTitle />} mutationOptions={{ onSuccess }}>
         <SimpleForm> 
         <TextInput source="Título" validate={[required()]}/>
         <TextInput source="Descripción" validate={[required()]}/>
@@ -105,7 +105,7 @@ export const PostEdit = () => {
             optionText="nombre" // Utiliza el atributo correcto para mostrar el nombre de la subcategoría
           />
         )}
-        <NumberInput source="No. de involucrados" validate={[required()]} min={1} />   
+        <NumberInput source="No. de involucrados" validate={[required()]} min={1} max={20}/>   
         <TextInput source="Resolución" validate={[required()]} />
 
         <RadioButtonGroupInput validate={[required()]}
@@ -122,7 +122,7 @@ export const PostEdit = () => {
   );
 };
 
-export const PostCreate = () => {
+export const TicketCreate = () => {
   const notify = useNotify();
   const refresh = useRefresh();
   const redirect = useRedirect();
