@@ -35,7 +35,7 @@ app.get("/tickets", async (req, res) => {
 
     try{
         let db = await connectDB();
-        let data = await db.collection("tickets").find({}).project({_id:0}).toArray();
+        let data = await db.collection("tickets").find({}).skip(1).toArray();
         console.log(data);
 
         /*
