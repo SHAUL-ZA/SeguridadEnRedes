@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
 let cors = require('cors');
@@ -13,10 +14,11 @@ app.use(bodyParser.json()); // support json encoded bodies
 
 //Funcion para entrar a la base de datos
 async function connectDB(){
-    let client = new MongoClient("mongodb+srv://mongo:K5M8s6T2YvL0xoF5@cluster0.rxpq7iy.mongodb.net/");
+    let client = new MongoClient(process.env.MONGODB_URI);
     await client.connect();
-    db = client.db();
+    db = client.db("TicketsDB");
     console.log("Conectado a la base de datos");
+    return db;
 }
 
 
@@ -30,43 +32,51 @@ async function log(sujeto, accion, objeto){
 }
 
 app.get("/tickets", async (req, res) => {
+
     try{
+        let db = await connectDB();
+        let data = await db.collection("tickets").find({}).project({_id:0}).toArray();
+        console.log(data);
+
+        /*
         let token = req.res("Authentication");
         let verifiedToken = await jwt.verify(token, "secretKey");
         let authData = await db.collection("usuarios").findOne({"usuario": verifiedToken.user});
         let parameterFind = {};
         if(authData.permissions == "2"){ //Si es un usuario coordinador nacinal es 2
             parameterFind["usuario"] = verifiedToken.user;
-        }
+        }*/
 
-        if("_sort" in req.query){
-            let sortBy = req.query._sort;
-            let sortOrder = req.query._order == "ASC" ? 1 : -1;
-            let start = Number(req.query._start);
-            let end = Number(req.query._end);
-            let sorter = {};
-            sorter[sortBy] = sortOrder;
-            let data = await db.collection("tickets").find(parameterFind).sort(sorter).project({_id:0}).toArray();
+        // if("_sort" in req.query){
+        //     let sortBy = req.query._sort;
+        //     let sortOrder = req.query._order == "ASC" ? 1 : -1;
+        //     let start = Number(req.query._start);
+        //     let end = Number(req.query._end);
+        //     let sorter = {};
+        //     sorter[sortBy] = sortOrder;
+        //     let data = await db.collection("tickets").find(parameterFind).sort(sorter).project({_id:0}).toArray();
             res.set("Access-Control-Expose-Headers", "X-Total-Count");
             res.set("X-Total-Count", data.length);
-            data = data.slice(start, end);
+        //     data = data.slice(start, end);
+        //     res.json(data);
+        // }
+        // else if("id" in req.query){
+        //     let data = [];
+        //     for(let i = 0; i < req.query.id.length; i++){
+        //         let dataObtain=await db.collection('tickets').find({id: Number(req.query.id[index])}).project({_id:0}).toArray();
+        //         data = await data.concat(dataObtain);
+        //     }
+
+        //     console.log(data);
             res.json(data);
-        }
-        else if("id" in req.query){
-            let data = [];
-            for(let i = 0; i < req.query.id.length; i++){
-                let dataObtain=await db.collection('tickets').find({id: Number(req.query.id[index])}).project({_id:0}).toArray();
-                data = await data.concat(dataObtain);
-            }
-            res.json(data);
-        } 
-        else{
-            let data = [];
-            data=await db.collection('tickets').find(req.query).project({_id:0}).toArray();
-            res.set("Access-Control-Expose-Headers", "X-Total-Count");
-            res.set("X-Total-Count", data.length);
-            res.json(data);
-        }
+        // } 
+        // else{
+        //     let data = [];
+        //     data=await db.collection('tickets').find(req.query).project({_id:0}).toArray();
+        //     res.set("Access-Control-Expose-Headers", "X-Total-Count");
+        //     res.set("X-Total-Count", data.length);
+        //     res.json(data);
+        // }
 
         
     }catch{

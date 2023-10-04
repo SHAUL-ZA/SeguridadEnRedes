@@ -23,7 +23,7 @@ export const App = () => (
     loginPage={MyLoginPage}  
     layout={MyLayout}
     darkTheme={{ palette: { mode: "dark" } }} 
-    authProvider={authProvider}
+    //authProvider={authProvider}
     dataProvider={dataProvider}
     dashboard={Dashboard}
     i18nProvider={i18nProvider}
