@@ -1,7 +1,8 @@
 // in src/App.tsx
-import { Admin, Resource, ShowGuesser } from "react-admin";
+import { Admin, Resource, ShowGuesser, CustomRoutes} from "react-admin";
+import { Route } from 'react-router-dom';
 import { dataProvider } from "./dataProvider";
-import { PostList, PostEdit, PostCreate } from "./posts";
+import { TicketList, TicketEdit, TicketCreate } from "./tickets";
 import { UserList, UserCreateForm } from "./users";
 import PostIcon from "@mui/icons-material/Book";
 import UserIcon from "@mui/icons-material/Group";
@@ -12,6 +13,8 @@ import { i18nProvider } from "./i18nProvider";
 import { MyAppBar } from "./MyAppBar";
 import { Layout } from "react-admin";
 import MyLoginPage from "./MyLoginPage";
+import Registrarse from "./registrarse";
+
 
 const MyLayout = (props: any) => <Layout {...props} appBar={MyAppBar} />;
 
@@ -26,10 +29,10 @@ export const App = () => (
     i18nProvider={i18nProvider}
   >
     <Resource
-      name="Posts"
-      list={PostList}
-      edit={PostEdit}
-      create={PostCreate}
+      name="tickets"
+      list={TicketList}
+      edit={TicketEdit}
+      create={TicketCreate}
       icon={PostIcon}
     />
     <Resource
@@ -48,5 +51,10 @@ export const App = () => (
       create={AlbumCreate}
       icon={PostIcon}
     />
+
+
+  <CustomRoutes>
+          <Route path="/registrarse"  element={<Registrarse />}/>
+  </CustomRoutes>
   </Admin>
 );
