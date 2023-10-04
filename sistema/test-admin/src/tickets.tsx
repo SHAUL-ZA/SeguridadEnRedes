@@ -42,8 +42,8 @@ export const TicketList = () => (
       <TextField source="id" />
       <TextField source="titulo" />
       <TextField source="descripcion" />
-      <TextField source="propietario" />
-      <EditButton />
+      <TextField reference="prioridad" source="prioridad" />
+      <EditButton /> 
     </Datagrid>
   </List>
 );
