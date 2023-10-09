@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
+const { ObjectId } = require('mongodb');
 let cors = require('cors');
 bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
@@ -32,11 +33,10 @@ async function log(sujeto, accion, objeto){
 }
 
 app.get("/tickets", async (req, res) => {
-
     try{
         let db = await connectDB();
         let data = await db.collection("tickets").find({}).skip(1).toArray();
-        console.log(data);
+        // console.log(data);
 
         /*
         let token = req.res("Authentication");
@@ -107,7 +107,8 @@ app.post("/tickets", async (req, res)=>{
     try{
         let token=req.get("Authentication");
         let verifiedToken = await jwt.verify(token, "secretKey");
-        let addValue=req.body
+
+        let addValue=req.body;
         let data=await db.collection('tickets').find({}).toArray();
         let id=data.length+1;
         addValue["id"]=id;
@@ -118,6 +119,91 @@ app.post("/tickets", async (req, res)=>{
         res.sendStatus(401);
     }
 }) 
+
+app.post("/new_ticket", async (req, res) => {
+    // try {
+
+    //     // Send a success response with the ID of the new ticket
+    //     res.status(200).json({ id: newTicket.insertedId });
+    // } catch (error) {
+    //     console.error(error);
+    //     res.status(500).send("Internal Server Error");
+    // }
+    //-----------------------------------------------------------------------
+    // User authentication
+
+
+    // Data extraction
+    let { aula, anio, titulo, descripcion, propietario_id, clasificacion, tipo_de_incidencia, prioridad, estado, proceso, resolucion } = req.body;
+    let FechaDeInicio = new Date();
+    let FechaDeCierre = null;
+
+    // Retrieve the value associated with 'aula' from the MongoDB document
+    const query = { _id: new ObjectId("6520acd74d3a749b59890ad5") };
+    const projection = { _id: 0, [`next_id.${aula}`]: 1 };
+
+    let next_idObj = await db.collection('tickets').findOne(query, projection);
+    console.log(next_idObj);
+    console.log(aula);
+    console.log(next_idObj.next_id.Ciudad_de_Mexico);
+    console.log(next_idObj.next_id[aula]);
+    console.log(next_idObj.next_id.aula);
+
+    if (next_idObj && next_idObj.next_id[aula] !== undefined) {
+        let next_id = next_idObj.next_id[aula]; // Extract the value
+
+        // Update the next_id for the specified 'aula'
+        next_idObj = {};
+        next_idObj[`next_id.${aula}`] = next_id + 1;
+
+        // Update the value in the MongoDB document
+        await db.collection('tickets').updateOne(query, { $set: next_idObj });
+
+        // Insert the new ticket
+        const newTicket = await db.collection('tickets').insertOne({
+            aula,
+            anio,
+            id: next_id,
+            titulo,
+            descripcion,
+            propietario_id,
+            clasificacion,
+            tipo_de_incidencia,
+            prioridad,
+            estado,
+            proceso,
+            resolucion,
+            FechaDeInicio: FechaDeInicio,
+            FechaDeCierre
+        });
+
+        // Send a success response with the ID of the new ticket
+        res.status(200).json({ id: newTicket.insertedId });
+    } else {
+        console.error("Document not found or 'next_id' not present for 'aula'.");
+        return res.status(404).json({ error: "Document not found or 'next_id' not present for 'aula'" });
+    }
+});
+
+app.get("/unresolved_tickets", async(req, res)=>{
+    try{
+        // User authentication
+        // let token=req.get("Authentication");
+        // let verifiedToken = await jwt.verify(token, "secretKey");
+        // let authData=await db.collection("users").findOne({"nombre": verifiedToken.usuario})
+        // let parametersFind={"id": Number(req.params.id)}
+        // if(authData.permissions=="2"){ //Si es un usuario coordinador nacinal es 2
+            // parametersFind["users"]=verifiedToken.usuario;
+        // }
+
+        // Fetch data
+        let data = await db.collection('tickets').find({"estado": "Sin Resolver"}, {"_id": 0}).toArray();;
+        // console.log(data);
+        res.json(data);
+    }catch{
+        res.sendStatus(401);
+    }
+});
 
 
 //update
