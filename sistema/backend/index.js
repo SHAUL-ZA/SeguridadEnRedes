@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 
 let db;
 const app = express();
-app.use(cors()); 
+app.use(cors({"origin": "*"})); 
 app.use(bodyParser.json()); // support json encoded bodies
 
 
@@ -32,53 +32,56 @@ async function log(sujeto, accion, objeto){
 }
 
 app.get("/tickets", async (req, res) => {
-
+    console.log("holaa paul inicial");
+    console.log(req.get);
     try{
         let db = await connectDB();
-        let data = await db.collection("tickets").find({}).skip(1).toArray();
-        console.log(data);
-
-        /*
-        let token = req.res("Authentication");
+        //console.log(data);
+        let token=request.get("Authentication");
+        //console.log(token);
+        console.log("auth data");
         let verifiedToken = await jwt.verify(token, "secretKey");
-        let authData = await db.collection("usuarios").findOne({"usuario": verifiedToken.user});
+        console.log(verifiedToken);
+        let authData = await db.collection("users").findOne({"usuario": verifiedToken.usuario});
+        console.log(authData.rol);
+      
         let parameterFind = {};
-        if(authData.permissions == "2"){ //Si es un usuario coordinador nacinal es 2
-            parameterFind["usuario"] = verifiedToken.user;
-        }*/
+        if(authData.rol == "coordinador_aula"){ 
+            parameterFind["usuario"] = verifiedToken.usuario;
+        }
 
-        // if("_sort" in req.query){
-        //     let sortBy = req.query._sort;
-        //     let sortOrder = req.query._order == "ASC" ? 1 : -1;
-        //     let start = Number(req.query._start);
-        //     let end = Number(req.query._end);
-        //     let sorter = {};
-        //     sorter[sortBy] = sortOrder;
-        //     let data = await db.collection("tickets").find(parameterFind).sort(sorter).project({_id:0}).toArray();
+        if("_sort" in req.query){
+            let sortBy = req.query._sort;
+            let sortOrder = req.query._order == "ASC" ? 1 : -1;
+            let start = Number(req.query._start);
+            let end = Number(req.query._end);
+            let sorter = {};
+            sorter[sortBy] = sortOrder;
+            let data = await db.collection("tickets").find(parameterFind).sort(sorter).project({_id:0}).toArray();
+
+
             res.set("Access-Control-Expose-Headers", "X-Total-Count");
             res.set("X-Total-Count", data.length);
-        //     data = data.slice(start, end);
-        //     res.json(data);
-        // }
-        // else if("id" in req.query){
-        //     let data = [];
-        //     for(let i = 0; i < req.query.id.length; i++){
-        //         let dataObtain=await db.collection('tickets').find({id: Number(req.query.id[index])}).project({_id:0}).toArray();
-        //         data = await data.concat(dataObtain);
-        //     }
-
-        //     console.log(data);
+            data = data.slice(start, end);
             res.json(data);
-        // } 
-        // else{
-        //     let data = [];
-        //     data=await db.collection('tickets').find(req.query).project({_id:0}).toArray();
-        //     res.set("Access-Control-Expose-Headers", "X-Total-Count");
-        //     res.set("X-Total-Count", data.length);
-        //     res.json(data);
-        // }
+        }
+        else if("id" in req.query){
+            let data = [];
+            for(let i = 0; i < req.query.id.length; i++){
+                let dataObtain=await db.collection('tickets').find({id: Number(req.query.id[index])}).project({_id:0}).toArray();
+                data = await data.concat(dataObtain);
+            }
 
-        
+            console.log(data);
+            res.json(data);
+        } 
+        else{
+            let data = [];
+            data=await db.collection('tickets').find(req.query).project({_id:0}).toArray();
+            res.set("Access-Control-Expose-Headers", "X-Total-Count");
+            res.set("X-Total-Count", data.length);
+            res.json(data);
+        }      
     }catch{
         res.status(401); //Unauthorized
     }
@@ -140,13 +143,14 @@ app.post("/registrarse", async(req, res)=>{
     let user=req.body.username;
     let pass=req.body.password;
     let fname=req.body.fullName;
+    let rol = req.body.rol;
     console.log(req.body)
     let data= await db.collection("users").findOne({"user": user});
     if(data==null){
         try{
             bcrypt.genSalt(10, (error, salt)=>{
                 bcrypt.hash(pass, salt, async(error, hash)=>{
-                    let usuarioAgregar={"usuario": user, "password": hash, "fullName": fname};
+                    let usuarioAgregar={"usuario": user, "password": hash, "fullName": fname, "rol": rol};
                     data= await db.collection("users").insertOne(usuarioAgregar);
                     res.sendStatus(201);
                 })
@@ -161,6 +165,7 @@ app.post("/registrarse", async(req, res)=>{
 
 
 app.post("/login", async(req, res)=>{
+    console.log("hola");
     let user=req.body.username;
     let pass=req.body.password;
     let data= await db.collection("users").findOne({"usuario": user});
@@ -169,8 +174,9 @@ app.post("/login", async(req, res)=>{
     }else{
         bcrypt.compare(pass, data.password, (error, result)=>{
             if(result){
-                let token=jwt.sign({usuario: data.usuario}, "secretKey", {expiresIn: 600});
+                let token=jwt.sign({usuario: data.usuario}, "secretKey", {expiresIn: "2h"});
                 log(user, "login", "");
+                console.log(token);
                 res.json({"token": token, "id": data.usuario, "fullName": data.fullName})
             }else{
                 res.sendStatus(401)
