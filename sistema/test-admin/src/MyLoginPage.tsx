@@ -11,10 +11,6 @@ const MyLoginPage = ({}) => {
   const login = useLogin();
   const notify = useNotify();
   const size = useWindowSize();
-  const boxwidth= (size.width/4)*3;
-  const boxheight= (size.height/3)*2;
-  const logowidth= (size.width/12)*4.5;
-  const logoheight= size.height/3;
   const handleSubmit = (e) => {
     
     e.preventDefault();
@@ -22,40 +18,90 @@ const MyLoginPage = ({}) => {
   };
 
   return (
-    <Box sx={{ width: size.width, height: size.height, background: '#fff', }} >
-      
-      <form style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)"}} onSubmit={handleSubmit} autoComplete="on" >
-        <Box sx={{ width: boxwidth, height: boxheight, boxShadow: 3 }}>
-        <Box sx={{ width: logowidth, height: logoheight}}>
-        <img src= "../recursos/Logo.png" alt="Logo Fundación por México" width={logowidth} height={logoheight}></img>
-        </Box>
-        <input
-          placeholder="Usuario"
-          name="email"
-          type="email"
-          value={email}
-          autoComplete="on"
-          onChange={(e) => setEmail(e.target.value)}
-          required
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100vh",
+          backgroundImage: 'url("../recursos/Blurred_Back.png")',
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+     <Container
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100vh",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          backgroundColor: "rgba(255, 255, 255, 0.3)",
+          padding: "30px",
+          borderRadius: "10px",
+          width: "300px",
+          height: "500px",
+        }}
+      >
+        <img src="../recursos/LogoBW.svg" alt="Logo"
+        style={{
+          maxWidth: "100%", 
+          maxHeight: "200px", 
+          marginBottom: "40px",
+        }}
         />
-        <input
-          placeholder="Constraseña"
-          name="password"
-          type="password"
-          value={password}
-          //width="48" 
-          //height="48"
-          autoComplete="on"
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <Button variant="contained" onClick={handleSubmit}>
-          Login
+            <form onSubmit={handleSubmit}>
+              <input
+                placeholder="Usuario"
+                name="email"
+                type="email"
+                value={email}
+                autoComplete="on"
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                style={{
+                  marginLeft: "45px",
+                }}
+              />
+              <input
+                placeholder="Contraseña"
+                name="password"
+                type="password"
+                value={password}
+                autoComplete="on"
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={{
+                  marginLeft: "45px",
+                }}
+              />
+                <Button variant="contained" onClick={handleSubmit}
+                 style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.8)",
+                  color: "black",
+                  border:"none", 
+                  padding: "10px 20px", 
+                  borderRadius: "5px", 
+                  cursor: "pointer", 
+                  width: "152px", 
+                  height: "40px",
+                  transition: "background-color 0.3s ease-in-out", 
+                  marginTop: "40px",
+                  marginLeft: "45px",
+                }}
+                >Login
         </Button>
-        </Box>
-      </form>
+            </form>
+          </Box>
+        </Container>
       </Box>
-      
+    
   );
 };
 
