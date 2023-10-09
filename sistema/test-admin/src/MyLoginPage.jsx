@@ -6,17 +6,20 @@ import { Button, Container, Box } from "@mui/material";
 import { useWindowSize } from "@uidotdev/usehooks";
 
 const MyLoginPage = ({}) => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const login = useLogin();
   const notify = useNotify();
   const size = useWindowSize();
-  const handleSubmit = (e) => {
+  // const handleSubmit = (e) => {
     
-    e.preventDefault();
-    login({ email, password }).catch(() => notify("Invalid email or password"));
-  };
+  //   e.preventDefault();
+  //   login({ email, password }).catch(() => notify("Invalid email or password"));
+  // };
 
+  const handleSubmit = () => {
+    login({ username, password }).catch(() => notify("Invalid username or password"));
+  };
   return (
       <Box
         sx={{
@@ -59,11 +62,11 @@ const MyLoginPage = ({}) => {
             <form onSubmit={handleSubmit}>
               <input
                 placeholder="Usuario"
-                name="email"
-                type="email"
-                value={email}
+                name="username"
+                type="text"
+                value={username}
                 autoComplete="on"
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setUsername(e.target.value)}
                 required
                 style={{
                   marginLeft: "45px",
