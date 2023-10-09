@@ -4,7 +4,8 @@ const Registrarse = () => {
     const [datos, setDatos] = useState({
         username: '',
         password: '',
-        fullName: ''
+        fullName: '',
+        rol: ''
     });
 
     const handleChange = (event) => {
@@ -67,6 +68,17 @@ const Registrarse = () => {
                         onChange={handleChange}
                     />
                 </div>
+                <div>
+                    <label htmlFor="rol">rol: </label>
+                    <input 
+                        type="text"
+                        id="rol"
+                        name="rol"
+                        value={datos.rol}
+                        onChange={handleChange}
+                    />
+                </div>
+              
                 <div>
                     <button type="button" onClick={handleSendData}>
                         Crear Usuario
