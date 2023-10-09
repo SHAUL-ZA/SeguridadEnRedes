@@ -128,6 +128,11 @@ app.put("/tickets/:id", async (req, res)=>{
     try{
         let token=req.get("Authentication");
         let verifiedToken = await jwt.verify(token, "secretKey");
+        console.log(verifiedToken);
+        if(!verifiedToken){
+            res.sendStatus(401);
+        }
+        //let dataaauth
         let addValue=req.body
         addValue["id"]=Number(req.params.id);
         let data=await db.collection("tickets").updateOne({"id": addValue["id"]}, {"$set": addValue});
@@ -144,13 +149,15 @@ app.post("/registrarse", async(req, res)=>{
     let pass=req.body.password;
     let fname=req.body.fullName;
     let rol = req.body.rol;
+    let lugar = req.body.lugar;
     console.log(req.body)
     let data= await db.collection("users").findOne({"user": user});
+    let dataSearch= await db.collection("users").find({}).toArray();
     if(data==null){
         try{
             bcrypt.genSalt(10, (error, salt)=>{
                 bcrypt.hash(pass, salt, async(error, hash)=>{
-                    let usuarioAgregar={"usuario": user, "password": hash, "fullName": fname, "rol": rol};
+                    let usuarioAgregar={"usuario": user, "password": hash, "fullName": fname, "rol": rol, "lugar": lugar,  id: dataSearch.length+1};
                     data= await db.collection("users").insertOne(usuarioAgregar);
                     res.sendStatus(201);
                 })
@@ -165,10 +172,12 @@ app.post("/registrarse", async(req, res)=>{
 
 
 app.post("/login", async(req, res)=>{
-    console.log("hola");
+    console.log(req.body);
     let user=req.body.username;
     let pass=req.body.password;
     let data= await db.collection("users").findOne({"usuario": user});
+    console.log(user);
+    console.log(data);  
     if(data==null){
         res.sendStatus(401);
     }else{
@@ -177,7 +186,7 @@ app.post("/login", async(req, res)=>{
                 let token=jwt.sign({usuario: data.usuario}, "secretKey", {expiresIn: "2h"});
                 log(user, "login", "");
                 console.log(token);
-                res.json({"token": token, "id": data.usuario, "fullName": data.fullName})
+                res.json({"token": token, "id": data.usuario, "usuario": data.usuario})
             }else{
                 res.sendStatus(401)
             }

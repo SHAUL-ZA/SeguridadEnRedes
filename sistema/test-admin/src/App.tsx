@@ -7,7 +7,7 @@ import { UserList, UserCreateForm } from "./users";
 import PostIcon from "@mui/icons-material/Book";
 import UserIcon from "@mui/icons-material/Group";
 import { Dashboard } from "./dashboard";
-import { authProvider } from "./authProvider";
+import  authProvider  from "./authProvider";
 import { AlbumCreate, AlbumEdit, AlbumList } from "./album";
 import { i18nProvider } from "./i18nProvider";
 import { MyAppBar } from "./MyAppBar";

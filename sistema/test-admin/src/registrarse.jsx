@@ -69,7 +69,7 @@ const Registrarse = () => {
                     />
                 </div>
                 <div>
-                    <label htmlFor="rol">rol: </label>
+                    <label htmlFor="rol">Rol: </label>
                     <input 
                         type="text"
                         id="rol"
@@ -78,7 +78,16 @@ const Registrarse = () => {
                         onChange={handleChange}
                     />
                 </div>
-              
+                <div>
+                    <label htmlFor="lugar">Lugar: </label>
+                    <input 
+                        type="text"
+                        id="lugar"
+                        name="lugar"
+                        value={datos.lugar}
+                        onChange={handleChange}
+                    />
+                </div>
                 <div>
                     <button type="button" onClick={handleSendData}>
                         Crear Usuario
