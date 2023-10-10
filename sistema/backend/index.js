@@ -6,6 +6,8 @@ bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const { ObjectId } = require('mongodb');
+
 let db;
 const app = express();
 app.use(cors({"origin": "*"})); 
@@ -85,6 +87,75 @@ app.get("/tickets", async (req, res) => {
     }catch{
         res.status(401); //Unauthorized
     }
+});
+
+
+
+app.post("/new_ticket", async (req, res) => {
+    try {
+
+        // Send a success response with the ID of the new ticket
+        res.status(200).json({ id: newTicket.insertedId });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+    //-----------------------------------------------------------------------
+    // User authentication
+
+
+    // Data extraction
+    let { aula, anio, titulo, descripcion, propietario_id, clasificacion, tipo_de_incidencia, prioridad, estado, proceso, resolucion } = req.body;
+    let FechaDeInicio = new Date();
+    let FechaDeCierre = null;
+
+    // Retrieve the value associated with 'aula' from the MongoDB document
+    const query = { _id: new ObjectId("6520acd74d3a749b59890ad5") };
+    const projection = { _id: 0, [`next_id.${aula}`]: 1 };
+
+    let next_idObj = await db.collection('tickets').findOne(query, projection);
+    console.log(next_idObj);
+    console.log(aula);
+    console.log(next_idObj.next_id.Ciudad_de_Mexico);
+    console.log(next_idObj.next_id[aula]);
+    console.log(next_idObj.next_id.aula);
+
+    if (next_idObj && next_idObj.next_id[aula] !== undefined) {
+        let next_id = next_idObj.next_id[aula]; // Extract the value
+
+        // Update the next_id for the specified 'aula'
+        next_idObj = {};
+        next_idObj[`next_id.${aula}`] = next_id + 1;
+
+        // Update the value in the MongoDB document
+        await db.collection('tickets').updateOne(query, { $set: next_idObj });
+
+        // Insert the new ticket
+        const newTicket = await db.collection('tickets').insertOne({
+            aula,
+            anio,
+            id: next_id,
+            titulo,
+            descripcion,
+            propietario_id,
+            clasificacion,
+            tipo_de_incidencia,
+            prioridad,
+            estado,
+            proceso,
+            resolucion,
+            FechaDeInicio: FechaDeInicio,
+            FechaDeCierre
+        });
+
+        // Send a success response with the ID of the new ticket
+        res.status(200).json({ id: newTicket.insertedId });
+    } else {
+        console.error("Document not found or 'next_id' not present for 'aula'.");
+        return res.status(404).json({ error: "Document not found or 'next_id' not present for 'aula'" });
+    }
+    
+
 });
 
 //Get one
