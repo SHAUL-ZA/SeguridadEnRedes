@@ -188,6 +188,39 @@ app.post("/new_ticket", async (req, res) => {
 app.get("/unresolved_tickets", async(req, res)=>{
     try{
         // User authentication
+
+        // Fetch data
+        let data = await db.collection('tickets').find({"estado": "Sin Resolver"}, {"_id": 0}).toArray();;
+        // console.log(data);
+        res.json(data);
+    }catch{
+        res.sendStatus(401);
+    }
+});
+
+app.get("/prueba", async(req, res)=>{
+    try{
+        // Get today's date
+        const today = new Date();
+
+        // Calculate the start date of the week (assuming Sunday as the first day of the week)
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay());
+
+        // If you want Monday to be the first day of the week, you can adjust it like this:
+        // startOfWeek.setDate(today.getDate() - (today.getDay() + 6) % 7);
+
+        console.log("Today's Date:", today.toDateString());
+        console.log("Start of the Week:", startOfWeek.toDateString());
+        res.sendStatus(200);
+    } catch{
+        res.sendStatus(405);
+    }
+});
+
+app.get("/unresolved_tickets/weekly", async(req, res)=>{
+    try{
+        // User authentication
         // let token=req.get("Authentication");
         // let verifiedToken = await jwt.verify(token, "secretKey");
         // let authData=await db.collection("users").findOne({"nombre": verifiedToken.usuario})
