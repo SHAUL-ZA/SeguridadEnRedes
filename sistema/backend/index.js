@@ -10,7 +10,7 @@ const { ObjectId } = require('mongodb');
 
 let db;
 const app = express();
-app.use(cors({"origin": "*"})); 
+app.use(cors()); 
 app.use(bodyParser.json()); // support json encoded bodies
 
 
