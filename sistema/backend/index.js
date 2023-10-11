@@ -33,65 +33,57 @@ async function log(sujeto, accion, objeto){
     await db.collection("logs").insertOne(toLog);
 }
 
-app.get("/tickets", async (req, res) => {
-    console.log("holaa paul inicial");
-    console.log(req.get);
-    try{
-        let db = await connectDB();
-        //console.log(data);
-        let token=request.get("Authentication");
-        //console.log(token);
-        console.log("auth data");
-        let verifiedToken = await jwt.verify(token, "secretKey");
-        console.log(verifiedToken);
-        let authData = await db.collection("users").findOne({"usuario": verifiedToken.usuario});
-        console.log(authData.rol);
-      
-        let parameterFind = {};
-        if(authData.rol == "coordinador_aula"){ 
-            parameterFind["usuario"] = verifiedToken.usuario;
+app.get("/tickets", async (request, response) => {
+    try {
+        let token = request.get("Authentication");
+        if (!token) {
+            response.sendStatus(401);
+            return;
         }
+        let verifiedToken = await jwt.verify(token, "secretKey");
+       
 
-        if("_sort" in req.query){
-            let sortBy = req.query._sort;
-            let sortOrder = req.query._order == "ASC" ? 1 : -1;
-            let start = Number(req.query._start);
-            let end = Number(req.query._end);
+        let parametersFind = {};
+        // if (authData.rol === "coordinador_aula") {
+        //     parametersFind["id"] = authData.id;
+        // } else if (authData.rol === "coordinador_nacional") {
+        //     parametersFind["lugar"] = authData.lugar;
+        // }
+        if ("_sort" in request.query) {
+            let sortBy = request.query._sort;
+            let sortOrder = request.query._order == "ASC" ? 1 : -1;
+            let start = Number(request.query._start);
+            let end = Number(request.query._end);
             let sorter = {};
             sorter[sortBy] = sortOrder;
-            let data = await db.collection("tickets").find(parameterFind).sort(sorter).project({_id:0}).toArray();
-
-
-            res.set("Access-Control-Expose-Headers", "X-Total-Count");
-            res.set("X-Total-Count", data.length);
+            let data = await db.collection("tickets").find(parametersFind).sort(sorter).project({ _id: 0 }).toArray();
+            response.set("Access-Control-Expose-Headers", "X-Total-Count");
+            response.set("X-Total-Count", data.length);
             data = data.slice(start, end);
-            res.json(data);
-        }
-        else if("id" in req.query){
+            response.json(data);
+        } else if ("id" in request.query) {
             let data = [];
-            for(let i = 0; i < req.query.id.length; i++){
-                let dataObtain=await db.collection('tickets').find({id: Number(req.query.id[index])}).project({_id:0}).toArray();
+            for (let index = 0; index < request.query.id.length; index++) {
+                let dataObtain = await db.collection("tickets").find({ id: Number(request.query.id[index]) }).project({ _id: 0 }).toArray();
                 data = await data.concat(dataObtain);
             }
-
-            console.log(data);
-            res.json(data);
-        } 
-        else{
+            response.json(data);
+        } else {
             let data = [];
-            data=await db.collection('tickets').find(req.query).project({_id:0}).toArray();
-            res.set("Access-Control-Expose-Headers", "X-Total-Count");
-            res.set("X-Total-Count", data.length);
-            res.json(data);
-        }      
-    }catch{
-        res.status(401); //Unauthorized
+            data = await db.collection("tickets").find(request.query).project({ _id: 0 }).toArray();
+            response.set("Access-Control-Expose-Headers", "X-Total-Count");
+            response.set("X-Total-Count", data.length);
+            response.json(data);
+        }
+    } catch {
+        response.sendStatus(401);
     }
 });
 
 
 
-app.post("/new_ticket", async (req, res) => {
+
+app.post("tickets/create", async (req, res) => {
     try {
 
         // Send a success response with the ID of the new ticket
@@ -185,7 +177,7 @@ app.post("/tickets", async (req, res)=>{
         let data=await db.collection('tickets').find({}).toArray();
         let id=data.length+1;
         addValue["id"]=id;
-        addValue["user"]=verifiedToken.usuario;
+        addValue["usuario"]=verifiedToken.usuario;
         data=await db.collection('tickets').insertOne(addValue);
         res.json(data);
     }catch{
@@ -221,7 +213,7 @@ app.post("/registrarse", async(req, res)=>{
     let fname=req.body.fullName;
     let rol = req.body.rol;
     let lugar = req.body.lugar;
-    console.log(req.body)
+    console.log(req.body) 
     let data= await db.collection("users").findOne({"user": user});
     let dataSearch= await db.collection("users").find({}).toArray();
     if(data==null){
@@ -257,7 +249,8 @@ app.post("/login", async(req, res)=>{
                 let token=jwt.sign({usuario: data.usuario}, "secretKey", {expiresIn: "2h"});
                 log(user, "login", "");
                 console.log(token);
-                res.json({"token": token, "id": data.usuario, "usuario": data.usuario})
+                console.log(data.id);
+                res.json({"token": token, "id": data.id, "usuario": data.usuario})
             }else{
                 res.sendStatus(401)
             }
