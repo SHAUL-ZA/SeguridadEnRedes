@@ -58,8 +58,8 @@ export const TicketEdit = () => {
   const [incidenciasFiltradas, setIncidenciasFiltradas] = useState< { id: string; nombre: string; categoria: string }[] >([]);
 
   const onSuccess = () => {
-    notify("Post actualizado");
-    redirect("/posts");
+    notify("Ticket actualizado");
+    redirect("/tickets");
     refresh();
   };
 
@@ -133,8 +133,8 @@ export const TicketCreate = () => {
   const fechaActual = new Date().toISOString().split('T')[0];
 
   const onSuccess = () => {
-    notify("Post creado");
-    redirect("/posts");
+    notify("Ticket creado");
+    redirect("/tickets");
     refresh();
   };
 
