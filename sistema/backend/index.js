@@ -44,7 +44,10 @@ app.get("/tickets", async (request, response) => {
        
 
         let parametersFind = {};
-        // if (authData.rol === "coordinador_aula") {
+        if(authData.permissions=="admin"){
+            parametersFind["usuario"]=verifiedToken.usuario; //
+        }
+        // if (authData. === "coordinador_aula") {
         //     parametersFind["id"] = authData.id;
         // } else if (authData.rol === "coordinador_nacional") {
         //     parametersFind["lugar"] = authData.lugar;
