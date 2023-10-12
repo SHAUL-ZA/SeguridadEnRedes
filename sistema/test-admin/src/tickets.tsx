@@ -112,6 +112,7 @@ export const TicketList = () => {
         <TextField sx={styles.ticketId} source="id" />
         <TextField sx={styles.ticketTitle} source="titulo" />
         <TextField sx={styles.ticketDescription} source="descripcion" />
+        <TextField source="fecha"/>
         <TextField
           source="prioridad"
           sx={(record: any) => ({
@@ -234,36 +235,48 @@ export const TicketCreate = () => {
   return (
     <Create mutationOptions={{ onSuccess }}>
       <SimpleForm>
-        <DateInput source="Fecha de creación" label="Fecha de creación" defaultValue={fechaActual} disabled />
-        <TextInput source="Título" validate={[required()]} />
-        <TextInput source="Descripción" validate={[required()]}/>
-        <RadioButtonGroupInput validate={[required()]}
+        <DateInput
+          source="Fecha de creación"
+          label="Fecha de creación"
+          defaultValue={fechaActual}
+          disabled
+          sx={{ margin: 2 }} // Example margin
+        />
+        <TextInput source="Título" validate={[required()]} sx={{ margin: 1 }} />
+        <TextInput source="Descripción" validate={[required()]} sx={{ margin: 1 }} />
+        <RadioButtonGroupInput
+          validate={[required()]}
           source="Nivel de Prioridad"
           choices={[
             { id: "Alta", name: "Alta" },
             { id: "Intermedia", name: "Intermedia" },
             { id: "Baja", name: "Baja" },
           ]}
+          sx={{ margin: 1 }}
         />
-
-        <SelectInput validate={[required()]}
-          source="clasificacion" // Asegúrate de que la referencia coincida con tu fuente de datos
+  
+        <SelectInput
+          validate={[required()]}
+          source="clasificacion"
           label="Clasificación"
           choices={clasificacion}
-          optionText="nombre" // Utiliza el atributo correcto para mostrar el nombre de la categoría
+          optionText="nombre"
           onChange={(e) => setClasificacionSeleccionada(e.target.value as string)}
+          sx={{ margin: 1 }}
         />
-
+  
         {clasificacionSeleccionada && (
-          <SelectInput validate={[required()]}
-            source="incidencia" // Asegúrate de que la referencia coincida con tu fuente de datos
+          <SelectInput
+            validate={[required()]}
+            source="incidencia"
             label="Incidencia"
             choices={incidenciasFiltradas}
-            optionText="nombre" // Utiliza el atributo correcto para mostrar el nombre de la subcategoría
+            optionText="nombre"
+            sx={{ margin: 1 }}
           />
         )}
-
-        <RadioButtonGroupInput 
+  
+        <RadioButtonGroupInput
           source="Estado"
           choices={[
             { id: "Abierto", name: "Abierto" },
@@ -272,8 +285,9 @@ export const TicketCreate = () => {
           ]}
           defaultValue={"Abierto"}
           disabled
+          sx={{ margin: 1, color: 'primary.main',}}
         />
       </SimpleForm>
     </Create>
   );
-};
+};  
