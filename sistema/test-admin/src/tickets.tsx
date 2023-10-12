@@ -19,12 +19,16 @@ import {
   useLogin,
   email,
   useUnique,
+  usePermissions,
 } from "react-admin";
 import { useRecordContext } from "react-admin";
 import { useNotify, useRedirect, useRefresh } from "react-admin";
 import { useAuthState, Loading } from "react-admin";
 import { useState, useEffect } from "react";
 import { clasificacion, incidencias } from "./utilidades";
+import MyLoginPage from "./MyLoginPage";
+// const permissions = usePermissions();
+
 
 const TicketTitle = () => {
   const record = useRecordContext();
@@ -36,19 +40,73 @@ const postFilters = [
   <ReferenceInput source="userId" label="Usuario" reference="users" />,
 ];
 
-export const TicketList = () => (
-  <List filters={postFilters}>
-    <Datagrid>
-      <TextField source="id" />
-      <TextField source="titulo" />
-      <TextField source="descripcion" />
-      <TextField reference="prioridad" source="prioridad" />
-      <EditButton /> 
-    </Datagrid>
-  </List>
-);
+export const TicketList = () => {
+  const { permissions } = usePermissions();
+  console.log(permissions);
+
+  if (true) {
+    return (
+      <List filters={postFilters}>
+        <Datagrid>
+          <TextField source="id" />
+          <TextField source="usuario" />
+          <TextField source="Título" />
+          <TextField source="Descripción" />
+          <TextField reference="prioridad" source="Nivel de Prioridad" />
+          <EditButton />
+        </Datagrid>
+      </List>
+    );
+  } 
+  else if(permissions === "coordinador_aula") {
+    return (
+      <List filters={postFilters}>
+      <Datagrid>
+        <TextField source="id" />
+        <TextField source="Título" />
+        <TextField source="Descripción" />
+        <TextField reference="prioridad" source="Nivel de Prioridad" />
+      </Datagrid>
+    </List>
+    );
+  }
+  else if(permissions === "coordinador_nacional") {
+    return (
+      <List filters={postFilters}>
+      <Datagrid>
+        <TextField source="id" />
+        <TextField source="Título" />
+        <TextField source="Descripción" />
+        <TextField reference="prioridad" source="Nivel de Prioridad" />
+      </Datagrid>
+    </List>
+    );
+  }
+  else if(permissions === "ejecutivo") {
+    return (
+      <List filters={postFilters}>
+      <Datagrid>
+        <TextField source="id" />
+        <TextField source="Título" />
+        <TextField source="Descripción" />
+        <TextField reference="prioridad" source="Nivel de Prioridad" />
+        <EditButton />
+      </Datagrid>
+    </List>
+    );
+  } else {
+    return (
+      <div>
+        <p>You do not have admin permissions to view this page.</p>
+        <p>Your permissions: {permissions}</p>
+      </div>
+    );
+  }
+};
+
 
 export const TicketEdit = () => {
+  
   const notify = useNotify();
   const refresh = useRefresh();
   const redirect = useRedirect();
@@ -84,6 +142,7 @@ export const TicketEdit = () => {
         <RadioButtonGroupInput validate={[required()]}
           source="Nivel de Prioridad"
           choices={[
+            { id: "Critica", name: "Critica" },
             { id: "Alta", name: "Alta" },
             { id: "Intermedia", name: "Intermedia" },
             { id: "Baja", name: "Baja" },
@@ -159,6 +218,7 @@ export const TicketCreate = () => {
         <RadioButtonGroupInput validate={[required()]}
           source="Nivel de Prioridad"
           choices={[
+            { id: "Critica", name: "Critica" },
             { id: "Alta", name: "Alta" },
             { id: "Intermedia", name: "Intermedia" },
             { id: "Baja", name: "Baja" },

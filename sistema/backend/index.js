@@ -5,6 +5,8 @@ let cors = require('cors');
 bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const https = require('https');
+const fs = require('fs');
 
 const { ObjectId } = require('mongodb');
 
@@ -84,14 +86,14 @@ app.get("/tickets", async (request, response) => {
 
 
 app.post("tickets/create", async (req, res) => {
-    try {
+    // try {
 
-        // Send a success response with the ID of the new ticket
-        res.status(200).json({ id: newTicket.insertedId });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal Server Error");
-    }
+    //     // Send a success response with the ID of the new ticket
+    //     res.status(200).json({ id: newTicket.insertedId });
+    // } catch (error) {
+    //     console.error(error);
+    //     res.status(500).send("Internal Server Error");
+    // }
     //-----------------------------------------------------------------------
     // User authentication
 
@@ -275,3 +277,9 @@ app.listen(1337, ()=>{
     connectDB();
     console.log("Servidor escuchando en puerto 1337")
 })
+
+//Cambiarlo a https
+// https.createServer({cert: fs.readFileSync("backend.cer"), key: fs.readFileSync("backend.key")}, app).listen(1337, ()=>{
+//     connectDB();
+//     console.log("Servidor escuchando en puerto 1337")
+// })

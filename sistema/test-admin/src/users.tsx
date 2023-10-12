@@ -26,11 +26,11 @@ export const UserCreateForm = () => {
     <Create mutationOptions={{ onSuccess }}>
       <SimpleForm>
         <TextInput source="username" validate={unique()} />
-        <TextInput source="name" />
+        {/* <TextInput source="name" />
         <TextInput source="email" />
         <TextInput source="phone" />
         <TextInput source="website" />
-        <TextInput source="company.name" />
+        <TextInput source="company.name" /> */}
       </SimpleForm>
     </Create>
   );
