@@ -35,122 +35,126 @@ async function log(sujeto, accion, objeto){
     await db.collection("logs").insertOne(toLog);
 }
 
-app.get("/tickets", async (request, response) => {
+app.get("/tickets", async (req, res) => {
     try {
-        let token = request.get("Authentication");
-        if (!token) {
-            response.sendStatus(401);
-            return;
-        }
+        let token = req.get("Authentication");
         let verifiedToken = await jwt.verify(token, "secretKey");
+        console.log(verifiedToken.usuario);
+        let authData = await db.collection("users").findOne({ "usuario": verifiedToken.usuario });//Por alguna razon esta busqueda requiere la contraseña hasheada
+        console.log("Bindex.js - authData: ", authData);
+        console.log("Bindex.js - authData.rol: ",authData.rol);
        
 
         let parametersFind = {};
-        // if (authData.rol === "coordinador_aula") {
-        //     parametersFind["id"] = authData.id;
-        // } else if (authData.rol === "coordinador_nacional") {
-        //     parametersFind["lugar"] = authData.lugar;
-        // }
-        if ("_sort" in request.query) {
-            let sortBy = request.query._sort;
-            let sortOrder = request.query._order == "ASC" ? 1 : -1;
-            let start = Number(request.query._start);
-            let end = Number(request.query._end);
+        if (authData.rol === "admin") {
+            // parametersFind["id"] = authData.id;
+        } 
+        else if (authData.rol === "coordinador_aula") {
+            // parametersFind["usuario"] = authData.usuario;
+        }
+        if ("_sort" in req.query) { //getList
+            let sortBy = req.query._sort;
+            let sortOrder = req.query._order == "ASC" ? 1 : -1;
+            let start = Number(req.query._start);
+            let end = Number(req.query._end);
             let sorter = {};
             sorter[sortBy] = sortOrder;
             let data = await db.collection("tickets").find(parametersFind).sort(sorter).project({ _id: 0 }).toArray();
-            response.set("Access-Control-Expose-Headers", "X-Total-Count");
-            response.set("X-Total-Count", data.length);
+            res.set("Access-Control-Expose-Headers", "X-Total-Count");
+            res.set("X-Total-Count", data.length);
             data = data.slice(start, end);
-            response.json(data);
-        } else if ("id" in request.query) {
+            res.json(data);
+            console.log("parametersFind: ", parametersFind);
+        } else if ("id" in req.query) { //getMany
             let data = [];
-            for (let index = 0; index < request.query.id.length; index++) {
-                let dataObtain = await db.collection("tickets").find({ id: Number(request.query.id[index]) }).project({ _id: 0 }).toArray();
+            for (let index = 0; index < req.query.id.length; index++) {
+                let dataObtain = await db.collection("tickets").find({ id: Number(req.query.id[index]) }).project({ _id: 0 }).toArray();
                 data = await data.concat(dataObtain);
             }
-            response.json(data);
-        } else {
+            res.json(data);
+        } else { //getManyReference
             let data = [];
-            data = await db.collection("tickets").find(request.query).project({ _id: 0 }).toArray();
-            response.set("Access-Control-Expose-Headers", "X-Total-Count");
-            response.set("X-Total-Count", data.length);
-            response.json(data);
+            data = await db.collection("tickets").find(req.query).project({ _id: 0 }).toArray();
+            res.set("Access-Control-Expose-Headers", "X-Total-Count");
+            res.set("X-Total-Count", data.length);
+            res.json(data);
         }
     } catch {
-        response.sendStatus(401);
+        res.sendStatus(401);
     }
 });
 
 
 
 
-app.post("tickets/create", async (req, res) => {
-    // try {
+// app.post("tickets/create", async (req, res) => {
+//     console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+//     await db.collection('tickets').insertOne({chamba: "chamba?"});
+//     // try {
 
-    //     // Send a success response with the ID of the new ticket
-    //     res.status(200).json({ id: newTicket.insertedId });
-    // } catch (error) {
-    //     console.error(error);
-    //     res.status(500).send("Internal Server Error");
-    // }
-    //-----------------------------------------------------------------------
-    // User authentication
+//     //     // Send a success response with the ID of the new ticket
+//     //     res.status(200).json({ id: newTicket.insertedId });
+//     // } catch (error) {
+//     //     console.error(error);
+//     //     res.status(500).send("Internal Server Error");
+//     // }
+//     //-----------------------------------------------------------------------
+//     // User authentication
 
 
-    // Data extraction
-    let { aula, anio, titulo, descripcion, propietario_id, clasificacion, tipo_de_incidencia, prioridad, estado, proceso, resolucion } = req.body;
-    let FechaDeInicio = new Date();
-    let FechaDeCierre = null;
+//     // Data extraction
+//     let { aula, anio, titulo, descripcion, propietario_id, clasificacion, tipo_de_incidencia, prioridad, estado, proceso, resolucion } = req.body;
+//     let FechaDeInicio = new Date();
+//     let FechaDeCierre = null;
 
-    // Retrieve the value associated with 'aula' from the MongoDB document
-    const query = { _id: new ObjectId("6520acd74d3a749b59890ad5") };
-    const projection = { _id: 0, [`next_id.${aula}`]: 1 };
+//     // Retrieve the value associated with 'aula' from the MongoDB document
+//     const query = { _id: new ObjectId("6520acd74d3a749b59890ad5") };
+//     const projection = { _id: 0, [`next_id.${aula}`]: 1 };
 
-    let next_idObj = await db.collection('tickets').findOne(query, projection);
-    console.log(next_idObj);
-    console.log(aula);
-    console.log(next_idObj.next_id.Ciudad_de_Mexico);
-    console.log(next_idObj.next_id[aula]);
-    console.log(next_idObj.next_id.aula);
+//     let next_idObj = await db.collection('tickets').findOne(query, projection);
+//     console.log(next_idObj);
+//     console.log(aula);
+//     console.log(next_idObj.next_id.Ciudad_de_Mexico);
+//     console.log(next_idObj.next_id[aula]);
+//     console.log(next_idObj.next_id.aula);
 
-    if (next_idObj && next_idObj.next_id[aula] !== undefined) {
-        let next_id = next_idObj.next_id[aula]; // Extract the value
+//     if (next_idObj && next_idObj.next_id[aula] !== undefined) {
+//         let next_id = next_idObj.next_id[aula]; // Extract the value
 
-        // Update the next_id for the specified 'aula'
-        next_idObj = {};
-        next_idObj[`next_id.${aula}`] = next_id + 1;
+//         // Update the next_id for the specified 'aula'
+//         next_idObj = {};
+//         next_idObj[`next_id.${aula}`] = next_id + 1;
 
-        // Update the value in the MongoDB document
-        await db.collection('tickets').updateOne(query, { $set: next_idObj });
+//         // Update the value in the MongoDB document
+//         await db.collection('tickets').updateOne(query, { $set: next_idObj });
 
-        // Insert the new ticket
-        const newTicket = await db.collection('tickets').insertOne({
-            aula,
-            anio,
-            id: next_id,
-            titulo,
-            descripcion,
-            propietario_id,
-            clasificacion,
-            tipo_de_incidencia,
-            prioridad,
-            estado,
-            proceso,
-            resolucion,
-            FechaDeInicio: FechaDeInicio,
-            FechaDeCierre
-        });
+//         // Insert the new ticket
+//         const newTicket = await db.collection('tickets').insertOne({
+//             aula,
+//             anio,
+//             id: next_id,
+//             titulo,
+//             descripcion,
+//             propietario_id,
+//             clasificacion,
+//             tipo_de_incidencia,
+//             prioridad,
+//             estado,
+//             proceso,
+//             resolucion,
+//             FechaDeInicio: FechaDeInicio,
+//             FechaDeCierre
+//         });
 
-        // Send a success response with the ID of the new ticket
-        res.status(200).json({ id: newTicket.insertedId });
-    } else {
-        console.error("Document not found or 'next_id' not present for 'aula'.");
-        return res.status(404).json({ error: "Document not found or 'next_id' not present for 'aula'" });
-    }
+//         // Send a success response with the ID of the new ticket
+//         res.status(200).json({ id: newTicket.insertedId });
+//     } else {
+//         console.error("Document not found or 'next_id' not present for 'aula'.");
+//         return res.status(404).json({ error: "Document not found or 'next_id' not present for 'aula'" });
+//     }
     
 
-});
+// });
 
 //Get one
 app.get("/tickets/:id", async (req, res)=>{
@@ -170,16 +174,37 @@ app.get("/tickets/:id", async (req, res)=>{
     }
 })
 
+app.get("/getUser", async (req, res)=>{
+    try{
+        // Authenticate
+        let token=req.get("Authentication");
+        // console.log("tokennnnnnnnnn: ", token);
+        let verifiedToken = await jwt.verify(token, "secretKey");
+        // console.log("verifiedToken: ", verifiedToken);
+        // Data extraction
+        // console.log("verifiedToken.usuario: ", verifiedToken.usuario);
+        let Data = await db.collection("users").findOne({"usuario": verifiedToken.usuario});
+        // console.log("Bindex.js - getUser Data: ", Data);
+        res.send(Data);
+    } catch {
+        res.sendStatus(401);
+    }
+})
+
 //create
 app.post("/tickets", async (req, res)=>{
     try{
+        // Authentication
         let token=req.get("Authentication");
         let verifiedToken = await jwt.verify(token, "secretKey");
+        // Data extraction
+        console.log(req.body);
         let addValue=req.body
         let data=await db.collection('tickets').find({}).toArray();
         let id=data.length+1;
         addValue["id"]=id;
         addValue["usuario"]=verifiedToken.usuario;
+        // Insert the new ticket
         data=await db.collection('tickets').insertOne(addValue);
         res.json(data);
     }catch{
@@ -262,16 +287,16 @@ app.post("/login", async(req, res)=>{
 
 
 //delete
-app.delete("/tickets/:id", async (req, res)=>{
-    try{
-        let token=req.get("Authentication");
-        let verifiedToken = await jwt.verify(token, "secretKey");
-        let data=await db.collection('tickets').deleteOne({"id": Number(req.params.id)});
-        res.json(data);
-    }catch{
-        res.sendStatus(401);
-    }
-})
+// app.delete("/tickets/:id", async (req, res)=>{
+//     try{
+//         let token=req.get("Authentication");
+//         let verifiedToken = await jwt.verify(token, "secretKey");
+//         let data=await db.collection('tickets').deleteOne({"id": Number(req.params.id)});
+//         res.json(data);
+//     }catch{
+//         res.sendStatus(401);
+//     }
+// })
 
 app.listen(1337, ()=>{
     connectDB();

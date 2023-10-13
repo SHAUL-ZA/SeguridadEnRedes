@@ -6,6 +6,8 @@ const fetchJsonUtil = (url, options={})=>{
         options.headers=new Headers({Accept: "application/json"})
     }
     options.headers.set("Authentication", localStorage.getItem("auth"));
+    // console.log(url);
+    // console.log(options);
     return fetchUtils.fetchJson(url, options);
 };
 
