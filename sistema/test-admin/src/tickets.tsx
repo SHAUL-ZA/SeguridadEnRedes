@@ -24,12 +24,15 @@ import {
   useLogin,
   email,
   useUnique,
+  usePermissions,
 } from "react-admin";
 import { useRecordContext } from "react-admin";
 import { useNotify, useRedirect, useRefresh } from "react-admin";
 import { useAuthState, Loading } from "react-admin";
 import { useState, useEffect } from "react";
 import { clasificacion, incidencias } from "./utilidades";
+import MyLoginPage from "./MyLoginPage";
+import authProvider  from "./authProvider";
 import { Box, CardHeader } from "@mui/material";
 
 const TicketTitle = () => {
@@ -92,6 +95,42 @@ const styles = {
   },
 };
 
+async function getUserData() {
+  try {
+    const authUser = await authProvider.getUser();
+    // Access the data within the resolved PromiseResult
+    const User = authUser;
+    console.log("authState: ", User);
+  } catch (error) {
+    // Handle any errors that might occur during the Promise execution
+    console.error(error);
+  }
+}
+
+export const TicketListDavidTESTING = () => {
+  //Get the identity of the current user
+  const authUser = getUserData();
+
+
+  console.log("authState: ", authUser);
+  //Get the role of the current user
+
+  if (true) {
+    return (
+      <List filters={postFilters}>
+        <Datagrid>
+          <TextField source="id" />
+          <TextField source="usuario" />
+          <TextField source="Título" />
+          <TextField source="Descripción" />
+          <TextField reference="prioridad" source="Nivel de Prioridad" />
+          <EditButton />
+        </Datagrid>
+      </List>
+    );
+  } 
+};
+
 export const TicketList = () => {
   const getPriorityColor = (prioridad:any) => {
     switch (prioridad) {
@@ -127,9 +166,8 @@ export const TicketList = () => {
   );
 };
 
-
-
 export const TicketEdit = () => {
+  
   const notify = useNotify();
   const refresh = useRefresh();
   const redirect = useRedirect();
@@ -165,6 +203,7 @@ export const TicketEdit = () => {
         <RadioButtonGroupInput validate={[required()]}
           source="Nivel de Prioridad"
           choices={[
+            { id: "Critica", name: "Critica" },
             { id: "Alta", name: "Alta" },
             { id: "Intermedia", name: "Intermedia" },
             { id: "Baja", name: "Baja" },
@@ -212,6 +251,7 @@ export const TicketCreate = () => {
   const [clasificacionSeleccionada, setClasificacionSeleccionada] = useState<string>("");
   const [incidenciasFiltradas, setIncidenciasFiltradas] = useState< { id: string; nombre: string; categoria: string }[] >([]);
   const fechaActual = new Date().toISOString().split('T')[0];
+  const propetario_id = authProvider.getUser();
 
   const onSuccess = () => {
     notify("Ticket creado");
@@ -235,11 +275,16 @@ export const TicketCreate = () => {
     <Create mutationOptions={{ onSuccess }}>
       <SimpleForm>
         <DateInput source="Fecha de creación" label="Fecha de creación" defaultValue={fechaActual} disabled />
+        <TextInput source="Propietario" label="Id de propietario" defaultValue={propetario_id} disabled />
+        <TextInput source="Aula" label="Aula que reporta" defaultValue={propetario_id} disabled />
         <TextInput source="Título" validate={[required()]} />
         <TextInput source="Descripción" validate={[required()]}/>
         <RadioButtonGroupInput validate={[required()]}
           source="Nivel de Prioridad"
           choices={[
+            // Esto lo voy a borrar no se preocupen -atte. David
+            { id: "Chamba", name: "Chamba" },
+            { id: "Critica", name: "Critica" },
             { id: "Alta", name: "Alta" },
             { id: "Intermedia", name: "Intermedia" },
             { id: "Baja", name: "Baja" },
