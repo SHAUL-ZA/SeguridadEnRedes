@@ -52,11 +52,20 @@ app.get("/tickets", async (req, res) => {
         else if (authData.rol === "coordinador_aula") {
             // parametersFind["usuario"] = authData.usuario;
         }
-        if ("_sort" in req.query) { //getList
-            let sortBy = req.query._sort;
-            let sortOrder = req.query._order == "ASC" ? 1 : -1;
-            let start = Number(req.query._start);
-            let end = Number(req.query._end);
+        //if(authData.permissions=="admin"){
+        //    parametersFind["usuario"]=verifiedToken.usuario; //
+        //}
+        // if (authData. === "coordinador_aula") {
+        //     parametersFind["id"] = authData.id;
+        // } else if (authData.rol === "coordinador_nacional") {
+        //     parametersFind["lugar"] = authData.lugar;
+        // }
+        if ("_sort" in request.query) {
+            let sortBy = request.query._sort;
+            let sortOrder = request.query._order == "ASC" ? 1 : -1;
+            let start = Number(request.query._start);
+            let end = Number(request.query._end);
+          
             let sorter = {};
             sorter[sortBy] = sortOrder;
             let data = await db.collection("tickets").find(parametersFind).sort(sorter).project({ _id: 0 }).toArray();

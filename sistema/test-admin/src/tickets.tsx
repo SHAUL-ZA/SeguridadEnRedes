@@ -1,5 +1,10 @@
 // in src/posts.tsx
 import { log } from "console";
+import Toast from "react-bootstrap/Toast";
+import Modal from 'react-bootstrap/Modal';
+import Card from 'react-bootstrap/Card';
+import ListGroup from 'react-bootstrap/ListGroup';
+import Button from 'react-bootstrap/Button';
 import {
   List,
   Datagrid,
@@ -28,16 +33,67 @@ import { useState, useEffect } from "react";
 import { clasificacion, incidencias } from "./utilidades";
 import MyLoginPage from "./MyLoginPage";
 import authProvider  from "./authProvider";
+import { Box, CardHeader } from "@mui/material";
 
 const TicketTitle = () => {
   const record = useRecordContext();
-  return <span>Post {record ? `"${record.title}"` : ""}</span>;
+  return <span>yhyjuju {record ? `"${record.titulo}"` : ""}</span>;
 };
 
 const postFilters = [
   <TextInput source="q" label="Buscar" alwaysOn />,
   <ReferenceInput source="userId" label="Usuario" reference="users" />,
 ];
+
+const styles = {
+  listContainer: {
+    backgroundColor: '#f0f0f0',
+    padding: '20px',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
+  },
+  datagrid: {
+    border: '3px solid #ccc',
+    borderRadius: '1px',
+    padding: '1px',
+  },
+  ticketId: {
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  ticketTitle: {
+    fontSize: '18px',
+    color: 'black',
+    fontStyle: 'bold',
+  },
+  ticketDescription: {
+    color: '#666',
+  },
+  ticketPriority: {
+    fontWeight: 'bold',
+    '&.Alto': {
+      color: 'red',
+    },
+    '&.Medio': {
+      color: 'yellow',
+    },
+    '&.Bajo': {
+      color: 'green',
+    },
+  },
+  editButton: {
+    backgroundColor: '#007bff',
+    color: '#fff',
+    border: 'none',
+    padding: '5px 10px',
+    borderRadius: '5px',
+    textDecoration: 'none',
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: '#0056b3',
+    },
+  },
+};
 
 async function getUserData() {
   try {
@@ -51,7 +107,7 @@ async function getUserData() {
   }
 }
 
-export const TicketList = () => {
+export const TicketListDavidTESTING = () => {
   //Get the identity of the current user
   const authUser = getUserData();
 
@@ -75,6 +131,40 @@ export const TicketList = () => {
   } 
 };
 
+export const TicketList = () => {
+  const getPriorityColor = (prioridad:any) => {
+    switch (prioridad) {
+      case 'Alto':
+        return 'red';
+      case 'Medio':
+        return 'yellow';
+      case 'Bajo':
+        return 'green';
+      default:
+        return 'inherit'; // Default color if the value is not recognized
+    }
+  };
+
+  return (
+    <List filters={postFilters}>
+      <Datagrid sx={styles.datagrid}>
+        <TextField sx={styles.ticketId} source="id" />
+        <TextField sx={styles.ticketTitle} source="titulo" />
+        <TextField sx={styles.ticketDescription} source="descripcion" />
+        <TextField
+          source="prioridad"
+          sx={(record: any) => ({
+            ...styles.ticketPriority,
+            color: record.prioridad
+              ? (record.prioridad === 'Alto' ? 'red' : (record.prioridad === 'Medio' ? 'yellow' : 'green'))
+              : 'inherit',
+          })}
+        />
+        <EditButton sx={styles.editButton} />
+      </Datagrid>
+    </List>
+  );
+};
 
 export const TicketEdit = () => {
   
