@@ -101,7 +101,10 @@ const authProvider={
         }
     },
 
-    getPermissions: ()=>{return Promise.resolve()},
+    getPermissions: ()=>{
+        // if()
+        return Promise.resolve()
+    },
 };
 
 export default authProvider;

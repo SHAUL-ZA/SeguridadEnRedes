@@ -28,6 +28,7 @@ import { useState, useEffect } from "react";
 import { clasificacion, incidencias } from "./utilidades";
 import MyLoginPage from "./MyLoginPage";
 import authProvider  from "./authProvider";
+const User = authProvider.getUser();
 
 const TicketTitle = () => {
   const record = useRecordContext();
@@ -43,23 +44,46 @@ async function getUserData() {
   try {
     const authUser = await authProvider.getUser();
     // Access the data within the resolved PromiseResult
-    const User = authUser;
-    console.log("authState: ", User);
+    return authUser;
   } catch (error) {
     // Handle any errors that might occur during the Promise execution
     console.error(error);
+    return null; // Return a default value or handle the error gracefully
   }
 }
 
 export const TicketList = () => {
-  //Get the identity of the current user
-  const authUser = getUserData();
+  // Use the useState hook to manage user data and loading state
+  const [authUser, setAuthUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const user = await getUserData();
+        setAuthUser(user);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  console.log("authState: ", authUser);
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (!authUser) {
+    // Handle the case where user data is not available or an error occurred
+    return <div>Error fetching user data</div>;
+  }
+  console.log("authState: ", authUser.rol);//Si les sale en rojo, ignorenlo, es un error de typescript, pero si funciona
   //Get the role of the current user
 
-  if (true) {
+  if (authUser.rol == "admin") {
     return (
       <List filters={postFilters}>
         <Datagrid>
@@ -73,6 +97,19 @@ export const TicketList = () => {
       </List>
     );
   } 
+  else if (authUser.rol == "coordinador_aula") {
+    return (
+      <List filters={postFilters}>
+        <Datagrid>
+          <TextField source="id" />
+          <TextField source="usuario" />
+          <TextField source="Título" />
+          <TextField source="Descripción" />
+          <TextField reference="prioridad" source="Nivel de Prioridad" />
+        </Datagrid>
+      </List>
+    )
+  }
 };
 
 
@@ -158,10 +195,40 @@ export const TicketCreate = () => {
   const refresh = useRefresh();
   const redirect = useRedirect();
   const unique = useUnique();
+  
+  // Define and set initial state first
   const [clasificacionSeleccionada, setClasificacionSeleccionada] = useState<string>("");
   const [incidenciasFiltradas, setIncidenciasFiltradas] = useState< { id: string; nombre: string; categoria: string }[] >([]);
   const fechaActual = new Date().toISOString().split('T')[0];
-  const propetario_id = authProvider.getUser();
+
+  // // Use the useState hook to manage user data and loading state
+  // const [authUser, setAuthUser] = useState(null);
+  // const [loading, setLoading] = useState(true);
+
+  // // UseEffect for fetching user data (make sure it comes after state definitions)
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     try {
+  //       const user = await getUserData();
+  //       setAuthUser(user);
+  //     } catch (error) {
+  //       console.error(error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+
+  //   fetchData();
+  // }, []);
+
+  // if (loading) {
+  //   return <Loading />;
+  // }
+
+  // if (!authUser) {
+  //   // Handle the case where user data is not available or an error occurred
+  //   return <div>Error fetching user data</div>;
+  // }
 
   const onSuccess = () => {
     notify("Ticket creado");
@@ -185,8 +252,8 @@ export const TicketCreate = () => {
     <Create mutationOptions={{ onSuccess }}>
       <SimpleForm>
         <DateInput source="Fecha de creación" label="Fecha de creación" defaultValue={fechaActual} disabled />
-        <TextInput source="Propietario" label="Id de propietario" defaultValue={propetario_id} disabled />
-        <TextInput source="Aula" label="Aula que reporta" defaultValue={propetario_id} disabled />
+        {/* <TextInput source="Propietario" label="Id de propietario" defaultValue={authUser.id} disabled />
+        <TextInput source="Aula" label="Aula que reporta" defaultValue={authUser.aula} disabled /> */}
         <TextInput source="Título" validate={[required()]} />
         <TextInput source="Descripción" validate={[required()]}/>
         <RadioButtonGroupInput validate={[required()]}
