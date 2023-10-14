@@ -91,8 +91,13 @@ const authProvider={
             } else {
                 // Assuming you want to work with the JSON response:
                 const data = await response.json();
-                // console.log("Data:", data);
-                return data;
+                console.log("Data:", data);
+                return Promise.resolve({
+                    id: data.id,
+                    usuario: data.usuario,
+                    aula: data.lugar,
+                    rol: data.rol,
+                });
             }
         } catch (error) {
             // Handle the error from the network request

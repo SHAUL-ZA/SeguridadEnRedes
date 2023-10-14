@@ -28,7 +28,6 @@ import { useState, useEffect } from "react";
 import { clasificacion, incidencias } from "./utilidades";
 import MyLoginPage from "./MyLoginPage";
 import authProvider  from "./authProvider";
-const User = authProvider.getUser();
 
 const TicketTitle = () => {
   const record = useRecordContext();
@@ -54,7 +53,7 @@ async function getUserData() {
 
 export const TicketList = () => {
   // Use the useState hook to manage user data and loading state
-  const [authUser, setAuthUser] = useState(null);
+  const [authUser, setAuthUser] = useState<{ rol: string, id: number, usuario: string, aula: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -80,7 +79,7 @@ export const TicketList = () => {
     // Handle the case where user data is not available or an error occurred
     return <div>Error fetching user data</div>;
   }
-  console.log("authState: ", authUser.rol);//Si les sale en rojo, ignorenlo, es un error de typescript, pero si funciona
+  console.log("authState: ", authUser);//Si les sale en rojo, ignorenlo, es un error de typescript, pero si funciona
   //Get the role of the current user
 
   if (authUser.rol == "admin") {
@@ -191,6 +190,28 @@ export const TicketEdit = () => {
 };
 
 export const TicketCreate = () => {
+  // Use the useState hook to manage user data and loading state
+  const [authUser, setAuthUser] = useState<{ rol: string, id: number, usuario: string, aula: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // UseEffect for fetching user data (make sure it comes after state definitions)
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const user = await getUserData();
+        setAuthUser(user);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+
+
   const notify = useNotify();
   const refresh = useRefresh();
   const redirect = useRedirect();
@@ -201,34 +222,6 @@ export const TicketCreate = () => {
   const [incidenciasFiltradas, setIncidenciasFiltradas] = useState< { id: string; nombre: string; categoria: string }[] >([]);
   const fechaActual = new Date().toISOString().split('T')[0];
 
-  // // Use the useState hook to manage user data and loading state
-  // const [authUser, setAuthUser] = useState(null);
-  // const [loading, setLoading] = useState(true);
-
-  // // UseEffect for fetching user data (make sure it comes after state definitions)
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     try {
-  //       const user = await getUserData();
-  //       setAuthUser(user);
-  //     } catch (error) {
-  //       console.error(error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   }
-
-  //   fetchData();
-  // }, []);
-
-  // if (loading) {
-  //   return <Loading />;
-  // }
-
-  // if (!authUser) {
-  //   // Handle the case where user data is not available or an error occurred
-  //   return <div>Error fetching user data</div>;
-  // }
 
   const onSuccess = () => {
     notify("Ticket creado");
@@ -248,12 +241,22 @@ export const TicketCreate = () => {
     }
   }, [clasificacionSeleccionada]);
 
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (!authUser) {
+    // Handle the case where user data is not available or an error occurred
+    return <div>Error fetching user data</div>;
+  }
+  
   return (
     <Create mutationOptions={{ onSuccess }}>
       <SimpleForm>
         <DateInput source="Fecha de creación" label="Fecha de creación" defaultValue={fechaActual} disabled />
-        {/* <TextInput source="Propietario" label="Id de propietario" defaultValue={authUser.id} disabled />
-        <TextInput source="Aula" label="Aula que reporta" defaultValue={authUser.aula} disabled /> */}
+        <TextInput source="Propietario" label="Id de propietario" defaultValue={authUser.id} disabled />
+        <TextInput source="Aula" label="Aula que reporta" defaultValue={authUser.aula} disabled />
         <TextInput source="Título" validate={[required()]} />
         <TextInput source="Descripción" validate={[required()]}/>
         <RadioButtonGroupInput validate={[required()]}
