@@ -113,7 +113,6 @@ export const TicketList = () => {
 
 
 export const TicketEdit = () => {
-  
   const notify = useNotify();
   const refresh = useRefresh();
   const redirect = useRedirect();
