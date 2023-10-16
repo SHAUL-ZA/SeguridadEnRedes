@@ -60,11 +60,11 @@ app.get("/tickets", async (req, res) => {
         // } else if (authData.rol === "coordinador_nacional") {
         //     parametersFind["lugar"] = authData.lugar;
         // }
-        if ("_sort" in request.query) {
-            let sortBy = request.query._sort;
-            let sortOrder = request.query._order == "ASC" ? 1 : -1;
-            let start = Number(request.query._start);
-            let end = Number(request.query._end);
+        if ("_sort" in req.query) {
+            let sortBy = req.query._sort;
+            let sortOrder = req.query._order == "ASC" ? 1 : -1;
+            let start = Number(req.query._start);
+            let end = Number(req.query._end);
           
             let sorter = {};
             sorter[sortBy] = sortOrder;
@@ -88,7 +88,8 @@ app.get("/tickets", async (req, res) => {
             res.set("X-Total-Count", data.length);
             res.json(data);
         }
-    } catch {
+    } catch(error) {
+        console.log(error)
         res.sendStatus(401);
     }
 });
@@ -282,7 +283,7 @@ app.post("/login", async(req, res)=>{
     }else{
         bcrypt.compare(pass, data.password, (error, result)=>{
             if(result){
-                let token=jwt.sign({usuario: data.usuario}, "secretKey", {expiresIn: "2h"});
+                let token=jwt.sign({usuario: data.usuario}, "secretKey", {expiresIn: 600});
                 log(user, "login", "");
                 console.log(token);
                 console.log(data.id);
