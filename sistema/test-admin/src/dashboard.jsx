@@ -3,7 +3,6 @@ import * as React from "react";
 import { useState } from "react";
 import { Card, CardContent, CardHeader } from "@mui/material";
 import { Button, Container, Box } from "@mui/material";
-import { Doughnut } from 'react-chartjs-2';
 
 export const Dashboard = () => (
   <div>
