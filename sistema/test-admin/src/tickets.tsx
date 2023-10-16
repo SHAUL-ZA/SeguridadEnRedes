@@ -1,10 +1,5 @@
 // in src/posts.tsx
 import { log } from "console";
-import Toast from "react-bootstrap/Toast";
-import Modal from 'react-bootstrap/Modal';
-import Card from 'react-bootstrap/Card';
-import ListGroup from 'react-bootstrap/ListGroup';
-import Button from 'react-bootstrap/Button';
 import {
   List,
   Datagrid,
@@ -99,23 +94,46 @@ async function getUserData() {
   try {
     const authUser = await authProvider.getUser();
     // Access the data within the resolved PromiseResult
-    const User = authUser;
-    console.log("authState: ", User);
+    return authUser;
   } catch (error) {
     // Handle any errors that might occur during the Promise execution
     console.error(error);
+    return null; // Return a default value or handle the error gracefully
   }
 }
 
-export const TicketListDavidTESTING = () => {
-  //Get the identity of the current user
-  const authUser = getUserData();
+export const TicketList = () => {
+  // Use the useState hook to manage user data and loading state
+  const [authUser, setAuthUser] = useState<{ rol: string, id: number, usuario: string, aula: string } | null>(null);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const user = await getUserData();
+        setAuthUser(user);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  console.log("authState: ", authUser);
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (!authUser) {
+    // Handle the case where user data is not available or an error occurred
+    return <div>Error fetching user data</div>;
+  }
+  console.log("authState: ", authUser);//Si les sale en rojo, ignorenlo, es un error de typescript, pero si funciona
   //Get the role of the current user
 
-  if (true) {
+  if (authUser.rol == "admin") {
     return (
       <List filters={postFilters}>
         <Datagrid>
@@ -129,45 +147,24 @@ export const TicketListDavidTESTING = () => {
       </List>
     );
   } 
+  else if (authUser.rol == "coordinador_aula") {
+    return (
+      <List filters={postFilters}>
+        <Datagrid>
+          <TextField source="id" />
+          <TextField source="usuario" />
+          <TextField source="Título" />
+          <TextField source="Descripción" />
+          <TextField reference="prioridad" source="Nivel de Prioridad" />
+        </Datagrid>
+      </List>
+    )
+  }
 };
 
-export const TicketList = () => {
-  const getPriorityColor = (prioridad:any) => {
-    switch (prioridad) {
-      case 'Alto':
-        return 'red';
-      case 'Medio':
-        return 'yellow';
-      case 'Bajo':
-        return 'green';
-      default:
-        return 'inherit'; // Default color if the value is not recognized
-    }
-  };
 
-  return (
-    <List filters={postFilters}>
-      <Datagrid sx={styles.datagrid}>
-        <TextField sx={styles.ticketId} source="id" />
-        <TextField sx={styles.ticketTitle} source="titulo" />
-        <TextField sx={styles.ticketDescription} source="descripcion" />
-        <TextField
-          source="prioridad"
-          sx={(record: any) => ({
-            ...styles.ticketPriority,
-            color: record.prioridad
-              ? (record.prioridad === 'Alto' ? 'red' : (record.prioridad === 'Medio' ? 'yellow' : 'green'))
-              : 'inherit',
-          })}
-        />
-        <EditButton sx={styles.editButton} />
-      </Datagrid>
-    </List>
-  );
-};
 
 export const TicketEdit = () => {
-  
   const notify = useNotify();
   const refresh = useRefresh();
   const redirect = useRedirect();
@@ -244,14 +241,38 @@ export const TicketEdit = () => {
 };
 
 export const TicketCreate = () => {
+  // Use the useState hook to manage user data and loading state
+  const [authUser, setAuthUser] = useState<{ rol: string, id: number, usuario: string, aula: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // UseEffect for fetching user data (make sure it comes after state definitions)
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const user = await getUserData();
+        setAuthUser(user);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+
+
   const notify = useNotify();
   const refresh = useRefresh();
   const redirect = useRedirect();
   const unique = useUnique();
+  
+  // Define and set initial state first
   const [clasificacionSeleccionada, setClasificacionSeleccionada] = useState<string>("");
   const [incidenciasFiltradas, setIncidenciasFiltradas] = useState< { id: string; nombre: string; categoria: string }[] >([]);
   const fechaActual = new Date().toISOString().split('T')[0];
-  const propetario_id = authProvider.getUser();
+
 
   const onSuccess = () => {
     notify("Ticket creado");
@@ -271,12 +292,22 @@ export const TicketCreate = () => {
     }
   }, [clasificacionSeleccionada]);
 
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (!authUser) {
+    // Handle the case where user data is not available or an error occurred
+    return <div>Error fetching user data</div>;
+  }
+  
   return (
     <Create mutationOptions={{ onSuccess }}>
       <SimpleForm>
         <DateInput source="Fecha de creación" label="Fecha de creación" defaultValue={fechaActual} disabled />
-        <TextInput source="Propietario" label="Id de propietario" defaultValue={propetario_id} disabled />
-        <TextInput source="Aula" label="Aula que reporta" defaultValue={propetario_id} disabled />
+        <TextInput source="Propietario" label="Id de propietario" defaultValue={authUser.id} disabled />
+        <TextInput source="Aula" label="Aula que reporta" defaultValue={authUser.aula} disabled />
         <TextInput source="Título" validate={[required()]} />
         <TextInput source="Descripción" validate={[required()]}/>
         <RadioButtonGroupInput validate={[required()]}
