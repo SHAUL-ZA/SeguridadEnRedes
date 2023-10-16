@@ -28,16 +28,67 @@ import { useState, useEffect } from "react";
 import { clasificacion, incidencias } from "./utilidades";
 import MyLoginPage from "./MyLoginPage";
 import authProvider  from "./authProvider";
+import { Box, CardHeader } from "@mui/material";
 
 const TicketTitle = () => {
   const record = useRecordContext();
-  return <span>Post {record ? `"${record.title}"` : ""}</span>;
+  return <span>yhyjuju {record ? `"${record.titulo}"` : ""}</span>;
 };
 
 const postFilters = [
   <TextInput source="q" label="Buscar" alwaysOn />,
   <ReferenceInput source="userId" label="Usuario" reference="users" />,
 ];
+
+const styles = {
+  listContainer: {
+    backgroundColor: '#f0f0f0',
+    padding: '20px',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
+  },
+  datagrid: {
+    border: '3px solid #ccc',
+    borderRadius: '1px',
+    padding: '1px',
+  },
+  ticketId: {
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  ticketTitle: {
+    fontSize: '18px',
+    color: 'black',
+    fontStyle: 'bold',
+  },
+  ticketDescription: {
+    color: '#666',
+  },
+  ticketPriority: {
+    fontWeight: 'bold',
+    '&.Alto': {
+      color: 'red',
+    },
+    '&.Medio': {
+      color: 'yellow',
+    },
+    '&.Bajo': {
+      color: 'green',
+    },
+  },
+  editButton: {
+    backgroundColor: '#007bff',
+    color: '#fff',
+    border: 'none',
+    padding: '5px 10px',
+    borderRadius: '5px',
+    textDecoration: 'none',
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: '#0056b3',
+    },
+  },
+};
 
 async function getUserData() {
   try {
@@ -110,6 +161,7 @@ export const TicketList = () => {
     )
   }
 };
+
 
 
 export const TicketEdit = () => {
