@@ -20,6 +20,13 @@ const MyLoginPage = ({}) => {
   const handleSubmit = () => {
     login({ username, password }).catch(() => notify("Invalid username or password"));
   };
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSubmit();
+      console.log("Tecla presionada" );
+    }
+  };
+
   return (
       <Box
         sx={{
@@ -68,6 +75,7 @@ const MyLoginPage = ({}) => {
                 autoComplete="on"
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                onKeyPress={handleKeyPress}
                 style={{
                   marginLeft: "45px",
                 }}
@@ -80,6 +88,7 @@ const MyLoginPage = ({}) => {
                 autoComplete="on"
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                onKeyPress={handleKeyPress}
                 style={{
                   marginLeft: "45px",
                 }}
@@ -98,7 +107,7 @@ const MyLoginPage = ({}) => {
                   marginTop: "40px",
                   marginLeft: "45px",
                 }}
-                >Login
+                >Iniciar Sesión
         </Button>
             </form>
           </Box>
