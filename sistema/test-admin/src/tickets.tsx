@@ -31,6 +31,7 @@ import { useState, useEffect } from "react";
 import { clasificacion, incidencias } from "./utilidades";
 import MyLoginPage from "./MyLoginPage";
 import authProvider  from "./authProvider";
+import { CardEditCustomTool }  from "./editToolBarr";
 import { Box, CardHeader,  } from "@mui/material";
 
 const TicketTitle = () => {
@@ -211,7 +212,7 @@ export const TicketEdit = () => {
   return (
 
     <Edit title={<TicketTitle/>} >
-        <SimpleForm> 
+        <SimpleForm toolbar = {<CardEditCustomTool/>} > 
         <TextInput source="Titulo" validate={[required()]} defaultValue="Titulo" disabled/>
         <TextInput source="Descripcion" validate={[required()]} fullWidth multiline/>
         <RadioButtonGroupInput validate={[required()]}
