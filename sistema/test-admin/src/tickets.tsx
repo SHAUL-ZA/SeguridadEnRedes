@@ -20,15 +20,16 @@ import {
   email,
   useUnique,
   usePermissions,
+  Button,
 } from "react-admin";
 import { useRecordContext } from "react-admin";
-import { useNotify, useRedirect, useRefresh } from "react-admin";
-import { useAuthState, Loading } from "react-admin";
+import { useNotify, useRedirect, useRefresh, ShowGuesser } from "react-admin";
+import { useAuthState, Loading, Show, SimpleShowLayout, DateField, NumberField} from "react-admin";
 import { useState, useEffect } from "react";
 import { clasificacion, incidencias } from "./utilidades";
 import MyLoginPage from "./MyLoginPage";
 import authProvider  from "./authProvider";
-import { Box, CardHeader } from "@mui/material";
+import { Box, CardHeader, Tab, Tabs } from "@mui/material";
 
 const TicketTitle = () => {
   const record = useRecordContext();
@@ -102,6 +103,49 @@ async function getUserData() {
   }
 }
 
+export const TicketShow = () => {
+  const refresh = useRefresh();
+  const redirect = useRedirect();
+  const [clasificacionSeleccionada, setClasificacionSeleccionada] = useState<string>("");
+  const [incidenciasFiltradas, setIncidenciasFiltradas] = useState< { id: string; nombre: string; categoria: string }[] >([]);
+
+  const onSuccess = () => {
+    redirect("/tickets");
+    refresh();
+  };
+  return(
+  <Show>
+      <SimpleShowLayout>
+        <div style={{ display: 'flex', flexDirection: 'column',alignItems: 'center',}}>
+          <TextField source="Título" style={{fontSize: '3rem', fontWeight:'bold'}}/>
+        </div>  
+          <TextField source="id" style={{fontSize: '1.2rem', fontWeight:'bold'}} />
+          <NumberField source="Propietario" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
+          <TextField source="usuario" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
+          <DateField source="Fecha de creación"   format="LL" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
+          <TextField source="Aula"style={{fontSize: '1.2rem', fontWeight:'bold'}} />
+          <TextField source="clasificacion" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
+          <TextField source="incidencia" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
+          <TextField source="Descripción" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
+          <TextField source="Estado" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
+          <TextField source="Nivel de Prioridad" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
+          
+
+      </SimpleShowLayout>
+      <div style={{    display: 'flex', flexDirection: 'column',alignItems: 'center',}}>
+      <Button label="Regresar" onClick={onSuccess}   style={{
+          backgroundColor: 'blue',  
+          color: 'white',            
+          borderRadius: '5px',        
+          padding: '10px 20px',       
+          fontWeight: 'bold',        
+          }}/>
+        </div>  
+      
+  </Show>
+  )
+};
+
 export const TicketList = () => {
   // Use the useState hook to manage user data and loading state
   const [authUser, setAuthUser] = useState<{ rol: string, id: number, usuario: string, aula: string } | null>(null);
@@ -136,7 +180,7 @@ export const TicketList = () => {
   if (authUser.rol == "admin") {
     return (
       <List filters={postFilters}>
-        <Datagrid>
+        <Datagrid rowClick="show">
           <TextField source="id" />
           <TextField source="usuario" />
           <TextField source="Título" />
