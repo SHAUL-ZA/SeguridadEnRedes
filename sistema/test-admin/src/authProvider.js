@@ -1,6 +1,7 @@
 const authProvider={
     login: async ({ username , password }) => {
-         const request = new Request('https://localhost:1337/login', {
+         const request = new Request('http://localhost:1337/login', {
+        //  const request = new Request('https://localhost:1337/login', {
             method: 'POST',
             body: JSON.stringify({ "username":username, "password": password }),
             headers: new Headers({ 'Content-Type': 'application/json' }),
@@ -48,33 +49,6 @@ const authProvider={
         }
     },
 
-    // getUser: async ()=>{
-    //     const request = new Request('http://localhost:1337/getUser', {
-    //         method: 'GET',
-    //         // body: JSON.stringify(JSON.parse(localStorage.getItem("auth"))),
-    //         headers: new Headers({ 'Content-Type': 'application/json', "Authentication": localStorage.getItem("auth")}),
-    //     });
-
-    //     try{
-    //         const response = await fetch(request);
-    //         if (response.status < 200 || response.status >= 300) {
-    //             console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-    //             throw new Error(response.statusText);
-    //         }
-    //         else {
-    //             // Assuming you want to work with the JSON response:
-    //             const data = await response.json();
-    //             console.log("Data:", data);
-    //             // Now you can work with the data as an object.
-    //         }
-    //         console.log("--------------------");
-    //         console.log("response: ", response);
-    //         console.log("--------------------");
-    //         return data;
-    //     }catch{
-    //         throw new Error('No eres un usuario permitido');
-    //     }
-    // },
     getUser: async () => {
         const request = new Request('http://localhost:1337/getUser', {
             method: 'GET',
@@ -90,7 +64,7 @@ const authProvider={
             } else {
                 // Assuming you want to work with the JSON response:
                 const data = await response.json();
-                console.log("Data:", data);
+                // console.log("Data:", data);
                 return Promise.resolve({
                     id: data.id,
                     usuario: data.usuario,
@@ -105,9 +79,7 @@ const authProvider={
         }
     },
 
-    getPermissions: ()=>{
-        // if()
-        return Promise.resolve()
+    getPermissions: ()=>{return Promise.resolve()
     },
 };
 

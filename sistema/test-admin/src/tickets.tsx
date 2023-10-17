@@ -32,63 +32,13 @@ import { Box, CardHeader } from "@mui/material";
 
 const TicketTitle = () => {
   const record = useRecordContext();
-  return <span>yhyjuju {record ? `"${record.titulo}"` : ""}</span>;
+  return <span>yhyjuju {record ? `"${record.Titulo}"` : ""}</span>;
 };
 
 const postFilters = [
   <TextInput source="q" label="Buscar" alwaysOn />,
   <ReferenceInput source="userId" label="Usuario" reference="users" />,
 ];
-
-const styles = {
-  listContainer: {
-    backgroundColor: '#f0f0f0',
-    padding: '20px',
-    borderRadius: '5px',
-    border: '1px solid #ccc',
-  },
-  datagrid: {
-    border: '3px solid #ccc',
-    borderRadius: '1px',
-    padding: '1px',
-  },
-  ticketId: {
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  ticketTitle: {
-    fontSize: '18px',
-    color: 'black',
-    fontStyle: 'bold',
-  },
-  ticketDescription: {
-    color: '#666',
-  },
-  ticketPriority: {
-    fontWeight: 'bold',
-    '&.Alto': {
-      color: 'red',
-    },
-    '&.Medio': {
-      color: 'yellow',
-    },
-    '&.Bajo': {
-      color: 'green',
-    },
-  },
-  editButton: {
-    backgroundColor: '#007bff',
-    color: '#fff',
-    border: 'none',
-    padding: '5px 10px',
-    borderRadius: '5px',
-    textDecoration: 'none',
-    cursor: 'pointer',
-    '&:hover': {
-      backgroundColor: '#0056b3',
-    },
-  },
-};
 
 async function getUserData() {
   try {
@@ -130,7 +80,7 @@ export const TicketList = () => {
     // Handle the case where user data is not available or an error occurred
     return <div>Error fetching user data</div>;
   }
-  console.log("authState: ", authUser);//Si les sale en rojo, ignorenlo, es un error de typescript, pero si funciona
+  console.log("authState: ", authUser);
   //Get the role of the current user
 
   if (authUser.rol == "admin") {
@@ -139,9 +89,10 @@ export const TicketList = () => {
         <Datagrid>
           <TextField source="id" />
           <TextField source="usuario" />
-          <TextField source="Título" />
-          <TextField source="Descripción" />
-          <TextField reference="prioridad" source="Nivel de Prioridad" />
+          <TextField source="Titulo" />
+          <TextField source="Descripcion" />
+          <TextField source="Nivel_de_Prioridad" reference="prioridad" />
+          <TextField source="Estado" />
           <EditButton />
         </Datagrid>
       </List>
@@ -152,10 +103,10 @@ export const TicketList = () => {
       <List filters={postFilters}>
         <Datagrid>
           <TextField source="id" />
-          <TextField source="usuario" />
-          <TextField source="Título" />
-          <TextField source="Descripción" />
-          <TextField reference="prioridad" source="Nivel de Prioridad" />
+          <TextField source="Usuario" />
+          <TextField source="Titulo" />
+          <TextField source="Descripcion" />
+          <TextField source="Nivel_de_Prioridad" reference="prioridad" />
         </Datagrid>
       </List>
     )
@@ -171,7 +122,10 @@ export const TicketEdit = () => {
   //¿const isLoading = useAuthState();
   //if(isLoading) return <Loading />;
   const [clasificacionSeleccionada, setClasificacionSeleccionada] = useState<string>("");
+  const [estadoSeleccionado, setEstadoSeleccionado] = useState<string>("Abierto");
+  const [fechaCierre, setFechaCierre] = useState<string | null>(null);
   const [incidenciasFiltradas, setIncidenciasFiltradas] = useState< { id: string; nombre: string; categoria: string }[] >([]);
+
 
   const onSuccess = () => {
     notify("Ticket actualizado");
@@ -192,15 +146,27 @@ export const TicketEdit = () => {
     }
   }, [clasificacionSeleccionada]);
 
+  useEffect(() => {
+    console.log("estadoSeleccionado: ", estadoSeleccionado);
+    if (estadoSeleccionado === 'Cerrado') {
+      const currentDate = new Date().toISOString().split('T')[0];
+      console.log("currentDate: ", currentDate);
+      setFechaCierre(currentDate);
+    } else {
+      setFechaCierre('');
+    }
+  }, [estadoSeleccionado]);
+
   return (
-    <Edit title={<TicketTitle />} mutationOptions={{ onSuccess }}>
+
+    <Edit title={<TicketTitle/>} >
         <SimpleForm> 
-        <TextInput source="Título" validate={[required()]}/>
-        <TextInput source="Descripción" validate={[required()]}/>
+        <TextInput source="Titulo" validate={[required()]} defaultValue="Titulo" disabled/>
+        <TextInput source="Descripcion" validate={[required()]} fullWidth multiline/>
         <RadioButtonGroupInput validate={[required()]}
-          source="Nivel de Prioridad"
+          source="Nivel_de_Prioridad"
           choices={[
-            { id: "Critica", name: "Critica" },
+            { id: "Critica", name: "Crítica" },
             { id: "Alta", name: "Alta" },
             { id: "Intermedia", name: "Intermedia" },
             { id: "Baja", name: "Baja" },
@@ -208,7 +174,7 @@ export const TicketEdit = () => {
         />
 
         <SelectInput validate={[required()]}
-          source="clasificacion" // Asegúrate de que la referencia coincida con tu fuente de datos
+          source="Clasificacion" // Asegúrate de que la referencia coincida con tu fuente de datos
           label="Clasificación"
           choices={clasificacion}
           optionText="nombre" // Utiliza el atributo correcto para mostrar el nombre de la categoría
@@ -217,28 +183,45 @@ export const TicketEdit = () => {
 
         {clasificacionSeleccionada && (
           <SelectInput validate={[required()]}
-            source="incidencia" // Asegúrate de que la referencia coincida con tu fuente de datos
+            source="Incidencia" // Asegúrate de que la referencia coincida con tu fuente de datos
             label="Incidencia"
             choices={incidenciasFiltradas}
             optionText="nombre" // Utiliza el atributo correcto para mostrar el nombre de la subcategoría
           />
         )}
-        <NumberInput source="No. de involucrados" validate={[required()]} min={1} max={20}/>   
-        <TextInput source="Resolución" validate={[required()]} />
+        <NumberInput source="Involucrados" label="No. de involucrados" validate={[required()]} min={1} max={20} defaultValue="Involucrados"/>
+        <TextInput source="Resolucion" validate={[required()]} />
 
-        <RadioButtonGroupInput validate={[required()]}
+        <RadioButtonGroupInput
+          validate={required()}
           source="Estado"
           choices={[
-            { id: "Abierto", name: "Abierto" },
-            { id: "EnProceso", name: "En Proceso" },
-            { id: "Cerrado", name: "Cerrado" },
+            { id: 'Abierto', name: 'Abierto' },
+            { id: 'En_Proceso', name: 'En Proceso' },
+            { id: 'Cerrado', name: 'Cerrado' },
           ]}
-          defaultValue={"Abierto"}
+          value={estadoSeleccionado} // Get the selected value
+          onChange={(e) => {
+            console.log("e.target.value: ", e.target.value)
+            setEstadoSeleccionado(e.target.value)
+          }
+          } // Update the state
         />
       </SimpleForm>
     </Edit>
   );
 };
+
+//Barra de abajo en edit para regresar a /tickets
+// export const CardEditCustom = () => {
+//   const record = useRecordContext();
+//   return (
+//     <Box display="flex" justifyContent="space-between">
+//       <CardHeader title={<TicketTitle />} />
+//       <EditButton basePath="/tickets" record={record} />
+//     </Box>
+//   );
+// }
 
 export const TicketCreate = () => {
   // Use the useState hook to manage user data and loading state
@@ -272,6 +255,8 @@ export const TicketCreate = () => {
   const [clasificacionSeleccionada, setClasificacionSeleccionada] = useState<string>("");
   const [incidenciasFiltradas, setIncidenciasFiltradas] = useState< { id: string; nombre: string; categoria: string }[] >([]);
   const fechaActual = new Date().toISOString().split('T')[0];
+  const fechaCierre = "";
+  const involucrados = 1;
 
 
   const onSuccess = () => {
@@ -305,17 +290,17 @@ export const TicketCreate = () => {
   return (
     <Create mutationOptions={{ onSuccess }}>
       <SimpleForm>
-        <DateInput source="Fecha de creación" label="Fecha de creación" defaultValue={fechaActual} disabled />
+        <DateInput source="Fecha_de_creacion" label="Fecha de creación" defaultValue={fechaActual} disabled />
+        <DateInput source="Fecha_de_cierre" label="Fecha de cierre" defaultValue={fechaCierre} disabled style={{ display: 'none' }} />
         <TextInput source="Propietario" label="Id de propietario" defaultValue={authUser.id} disabled />
         <TextInput source="Aula" label="Aula que reporta" defaultValue={authUser.aula} disabled />
-        <TextInput source="Título" validate={[required()]} />
-        <TextInput source="Descripción" validate={[required()]}/>
+        <TextInput source="Titulo" validate={[required()]} />
+        <TextInput source="Descripcion" validate={[required()]} fullWidth multiline/>
+        <DateInput source="Involucrados" label="Involucrados" defaultValue={involucrados} disabled style={{ display: 'none' }} />
         <RadioButtonGroupInput validate={[required()]}
-          source="Nivel de Prioridad"
+          source="Nivel_de_Prioridad"
           choices={[
-            // Esto lo voy a borrar no se preocupen -atte. David
-            { id: "Chamba", name: "Chamba" },
-            { id: "Critica", name: "Critica" },
+            { id: "Critica", name: "Crítica" },
             { id: "Alta", name: "Alta" },
             { id: "Intermedia", name: "Intermedia" },
             { id: "Baja", name: "Baja" },
@@ -323,7 +308,7 @@ export const TicketCreate = () => {
         />
 
         <SelectInput validate={[required()]}
-          source="clasificacion" // Asegúrate de que la referencia coincida con tu fuente de datos
+          source="Clasificacion" // Asegúrate de que la referencia coincida con tu fuente de datos
           label="Clasificación"
           choices={clasificacion}
           optionText="nombre" // Utiliza el atributo correcto para mostrar el nombre de la categoría
@@ -332,7 +317,7 @@ export const TicketCreate = () => {
 
         {clasificacionSeleccionada && (
           <SelectInput validate={[required()]}
-            source="incidencia" // Asegúrate de que la referencia coincida con tu fuente de datos
+            source="Incidencia" // Asegúrate de que la referencia coincida con tu fuente de datos
             label="Incidencia"
             choices={incidenciasFiltradas}
             optionText="nombre" // Utiliza el atributo correcto para mostrar el nombre de la subcategoría
@@ -343,7 +328,7 @@ export const TicketCreate = () => {
           source="Estado"
           choices={[
             { id: "Abierto", name: "Abierto" },
-            { id: "EnProceso", name: "En Proceso" },
+            { id: "En_Proceso", name: "En Proceso" },
             { id: "Cerrado", name: "Cerrado" },
           ]}
           defaultValue={"Abierto"}
