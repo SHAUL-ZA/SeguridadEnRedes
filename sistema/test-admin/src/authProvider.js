@@ -76,7 +76,7 @@ const authProvider={
     //     }
     // },
     getUser: async () => {
-        const request = new Request('http://localhost:1337/getUser', {
+        const request = new Request('https://localhost:1337/getUser', {
             method: 'GET',
             headers: new Headers({ 'Content-Type': 'application/json', "Authentication": localStorage.getItem("auth") }),
         });
