@@ -6,7 +6,7 @@ import { TicketList, TicketEdit, TicketCreate } from "./tickets";
 import { UserList, UserCreateForm } from "./users";
 import PostIcon from "@mui/icons-material/Book";
 import UserIcon from "@mui/icons-material/Group";
-import { Dashboard } from "./dashboard";
+import { Tablero } from "./tablero";
 import  authProvider  from "./authProvider";
 import { AlbumCreate, AlbumEdit, AlbumList } from "./album";
 import { i18nProvider } from "./i18nProvider";
@@ -25,7 +25,7 @@ export const App = () => (
     darkTheme={{ palette: { mode: "dark" } }} 
     authProvider={authProvider}
     dataProvider={dataProvider}
-    dashboard={Dashboard}
+    dashboard={Tablero}
     i18nProvider={i18nProvider}
   >
     <Resource
