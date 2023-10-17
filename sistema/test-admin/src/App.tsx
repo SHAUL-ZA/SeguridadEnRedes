@@ -2,7 +2,7 @@
 import { Admin, Resource, ShowGuesser, CustomRoutes} from "react-admin";
 import { Route } from 'react-router-dom';
 import { dataProvider } from "./dataProvider";
-import { TicketList, TicketEdit, TicketCreate } from "./tickets";
+import { TicketList, TicketEdit, TicketCreate, TicketShow } from "./tickets";
 import { UserList, UserCreateForm } from "./users";
 import PostIcon from "@mui/icons-material/Book";
 import UserIcon from "@mui/icons-material/Group";
@@ -34,6 +34,7 @@ export const App = () => (
       edit={TicketEdit}
       create={TicketCreate}
       icon={PostIcon}
+      show={TicketShow}
     />
     <Resource
       options={{ label: "Usuarios" }}

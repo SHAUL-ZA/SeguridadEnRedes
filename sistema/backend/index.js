@@ -161,7 +161,7 @@ app.get("/tickets/:id", async (req, res)=>{
     try{
         let token=req.get("Authentication");
         let verifiedToken = await jwt.verify(token, "secretKey");
-        let authData=await db.collection("users").findOne({"nombre": verifiedToken.usuario})
+        let authData=await db.collection("users").findOne({"usuario": verifiedToken.usuario})
         let parametersFind={"id": Number(req.params.id)}
         if(authData.permissions=="2"){ //Si es un usuario coordinador nacinal es 2
             parametersFind["users"]=verifiedToken.usuario;
