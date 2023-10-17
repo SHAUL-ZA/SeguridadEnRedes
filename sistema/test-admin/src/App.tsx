@@ -2,11 +2,11 @@
 import { Admin, Resource, ShowGuesser, CustomRoutes} from "react-admin";
 import { Route } from 'react-router-dom';
 import { dataProvider } from "./dataProvider";
-import { TicketList, TicketEdit, TicketCreate } from "./tickets";
+import { TicketList, TicketEdit, TicketCreate, TicketShow } from "./tickets";
 import { UserList, UserCreateForm } from "./users";
 import PostIcon from "@mui/icons-material/Book";
 import UserIcon from "@mui/icons-material/Group";
-import { Dashboard } from "./dashboard";
+import { Tablero } from "./tablero";
 import  authProvider  from "./authProvider";
 import { AlbumCreate, AlbumEdit, AlbumList } from "./album";
 import { i18nProvider } from "./i18nProvider";
@@ -25,7 +25,7 @@ export const App = () => (
     darkTheme={{ palette: { mode: "dark" } }} 
     authProvider={authProvider}
     dataProvider={dataProvider}
-    dashboard={Dashboard}
+    dashboard={Tablero}
     i18nProvider={i18nProvider}
   >
     <Resource
@@ -34,6 +34,7 @@ export const App = () => (
       edit={TicketEdit}
       create={TicketCreate}
       icon={PostIcon}
+      show={TicketShow}
     />
     <Resource
       options={{ label: "Usuarios" }}
