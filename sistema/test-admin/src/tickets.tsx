@@ -21,6 +21,8 @@ import {
   useUnique,
   usePermissions,
   Button,
+  TabbedShowLayout,
+  Tab,
 } from "react-admin";
 import { useRecordContext } from "react-admin";
 import { useNotify, useRedirect, useRefresh, ShowGuesser } from "react-admin";
@@ -29,7 +31,7 @@ import { useState, useEffect } from "react";
 import { clasificacion, incidencias } from "./utilidades";
 import MyLoginPage from "./MyLoginPage";
 import authProvider  from "./authProvider";
-import { Box, CardHeader, Tab, Tabs } from "@mui/material";
+import { Box, CardHeader,  } from "@mui/material";
 
 const TicketTitle = () => {
   const record = useRecordContext();
@@ -115,7 +117,8 @@ export const TicketShow = () => {
   };
   return(
   <Show>
-      <SimpleShowLayout>
+      <TabbedShowLayout>
+        <TabbedShowLayout.Tab label="Información">
         <div style={{ display: 'flex', flexDirection: 'column',alignItems: 'center',}}>
           <TextField source="Título" style={{fontSize: '3rem', fontWeight:'bold'}}/>
         </div>  
@@ -126,12 +129,16 @@ export const TicketShow = () => {
           <TextField source="Aula"style={{fontSize: '1.2rem', fontWeight:'bold'}} />
           <TextField source="clasificacion" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
           <TextField source="incidencia" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
+          </TabbedShowLayout.Tab>
+          <TabbedShowLayout.Tab label="descripción">
           <TextField source="Descripción" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
+          </TabbedShowLayout.Tab>
+          <TabbedShowLayout.Tab label="Estado">
           <TextField source="Estado" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
           <TextField source="Nivel de Prioridad" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
-          
+          </TabbedShowLayout.Tab>
 
-      </SimpleShowLayout>
+      </TabbedShowLayout>
       <div style={{    display: 'flex', flexDirection: 'column',alignItems: 'center',}}>
       <Button label="Regresar" onClick={onSuccess}   style={{
           backgroundColor: 'blue',  
