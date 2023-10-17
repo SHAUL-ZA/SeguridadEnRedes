@@ -273,7 +273,7 @@ app.post("/login", async(req, res)=>{
     }else{
         bcrypt.compare(pass, data.password, (error, result)=>{
             if(result){
-                let token=jwt.sign({usuario: data.usuario}, "secretKey", {expiresIn: 600});
+                let token=jwt.sign({usuario: data.usuario}, "secretKey", {expiresIn: "3h"});
                 log(user, "login", "");
                 console.log(token);
                 console.log(data.id);
