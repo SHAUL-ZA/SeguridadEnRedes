@@ -46,20 +46,10 @@ app.get("/tickets", async (req, res) => {
        
 
         let parametersFind = {};
-        if (authData.rol === "admin") {
-            // parametersFind["id"] = authData.id;
-        } 
-        else if (authData.rol === "coordinador_aula") {
-            // parametersFind["usuario"] = authData.usuario;
+        if (authData.rol === "coordinador_aula") {
+            parametersFind["Propietario"] = authData.id;
         }
-        //if(authData.permissions=="admin"){
-        //    parametersFind["usuario"]=verifiedToken.usuario; //
-        //}
-        // if (authData. === "coordinador_aula") {
-        //     parametersFind["id"] = authData.id;
-        // } else if (authData.rol === "coordinador_nacional") {
-        //     parametersFind["lugar"] = authData.lugar;
-        // }
+     
         if ("_sort" in req.query) {
             let sortBy = req.query._sort;
             let sortOrder = req.query._order == "ASC" ? 1 : -1;
@@ -308,13 +298,9 @@ app.post("/login", async(req, res)=>{
 //     }
 // })
 
-app.listen(1337, ()=>{
+
+//Cambiarlo a https
+https.createServer({cert: fs.readFileSync("backend.cer"), key: fs.readFileSync("backend.key")}, app).listen(1337, ()=>{
     connectDB();
     console.log("Servidor escuchando en puerto 1337")
 })
-
-//Cambiarlo a https
-// https.createServer({cert: fs.readFileSync("backend.cer"), key: fs.readFileSync("backend.key")}, app).listen(1337, ()=>{
-//     connectDB();
-//     console.log("Servidor escuchando en puerto 1337")
-// })
