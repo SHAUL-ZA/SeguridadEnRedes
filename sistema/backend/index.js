@@ -141,9 +141,6 @@ app.get("/tickets/:id", async (req, res)=>{
         let verifiedToken = await jwt.verify(token, "secretKey");
         let authData=await db.collection("users").findOne({"usuario": verifiedToken.usuario})
         let parametersFind={"id": Number(req.params.id)}
-        if(authData.permissions=="2"){ //Si es un usuario coordinador nacinal es 2
-            parametersFind["users"]=verifiedToken.usuario;
-        }
         let data=await db.collection('tickets').find(parametersFind).project({_id:0}).toArray();
         //console.log("Bindex-data: ", data);
         log(verifiedToken.usuario, "ver objeto", req.params.id)
@@ -152,7 +149,7 @@ app.get("/tickets/:id", async (req, res)=>{
         res.sendStatus(401);
     }
 })
-//Este es el control Z antes de mi desvergue
+
 //update
 app.put("/tickets/:id", async (req, res)=>{
     console.log("req: ", req.body);
