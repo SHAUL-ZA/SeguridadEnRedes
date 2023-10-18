@@ -10,6 +10,7 @@ const fs = require('fs');
 
 const { ObjectId } = require('mongodb');
 const { Console } = require('console');
+const { fileURLToPath } = require('url');
 
 let db;
 const app = express();
@@ -59,6 +60,16 @@ app.get("/tickets", async (req, res) => {
           
             let sorter = {};
             sorter[sortBy] = sortOrder;
+            if("id" in req.query){
+                parametersFind["id"]=Number(req.query.id);
+            }
+            if("usuario" in req.query){
+                parametersFind["usuario"]=req.query.usuario;
+            }
+            if("Estado" in req.query){
+                parametersFind["Estado"]=req.query.Estado;
+            }
+
             let data = await db.collection("tickets").find(parametersFind).sort(sorter).project({ _id: 0 }).toArray();
             res.set("Access-Control-Expose-Headers", "X-Total-Count");
             res.set("X-Total-Count", data.length);

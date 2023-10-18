@@ -40,8 +40,9 @@ const TicketTitle = () => {
 };
 
 const postFilters = [
-  <TextInput source="q" label="Buscar" alwaysOn />,
-  <ReferenceInput source="userId" label="Usuario" reference="users" />,
+  <TextInput source="usuario" label="Buscar usuario" alwaysOn />,
+  <ReferenceInput source="id" label="id" reference="tickets" />,
+  <ReferenceInput source="Estado" label="Estado" reference="tickets"/>,
 ];
 
 async function getUserData() {
@@ -71,22 +72,22 @@ export const TicketShow = () => {
       <TabbedShowLayout>
         <TabbedShowLayout.Tab label="Información">
         <div style={{ display: 'flex', flexDirection: 'column',alignItems: 'center',}}>
-          <TextField source="Título" style={{fontSize: '3rem', fontWeight:'bold'}}/>
+          <TextField source="Titulo" style={{fontSize: '3rem', fontWeight:'bold'}}/>
         </div>  
           <TextField source="id" style={{fontSize: '1.2rem', fontWeight:'bold'}} />
           <NumberField source="Propietario" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
           <TextField source="usuario" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
-          <DateField source="Fecha de creación"   format="LL" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
+          <DateField source="Fecha_de_creacion"   format="LL" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
           <TextField source="Aula"style={{fontSize: '1.2rem', fontWeight:'bold'}} />
-          <TextField source="clasificacion" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
-          <TextField source="incidencia" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
+          <TextField source="Clasificacion" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
+          <TextField source="Incidencia" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
           </TabbedShowLayout.Tab>
           <TabbedShowLayout.Tab label="descripción">
-          <TextField source="Descripción" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
+          <TextField source="Descripcion" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
           </TabbedShowLayout.Tab>
           <TabbedShowLayout.Tab label="Estado">
           <TextField source="Estado" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
-          <TextField source="Nivel de Prioridad" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
+          <TextField source="Nivel_de_Prioridad" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
           </TabbedShowLayout.Tab>
 
       </TabbedShowLayout>
@@ -159,6 +160,21 @@ export const TicketList = () => {
           <TextField source="Titulo" />
           <TextField source="Descripcion" />
           <TextField source="Nivel_de_Prioridad" reference="prioridad" />
+          <EditButton />
+        </Datagrid>
+      </List>
+    )
+  }
+  else if (authUser.rol == "ejecutivo") {
+    return (
+      <List filters={postFilters}>
+        <Datagrid>
+          <TextField source="id" />
+          <TextField source="Usuario" />
+          <TextField source="Titulo" />
+          <TextField source="Descripcion" />
+          <TextField source="Nivel_de_Prioridad" reference="prioridad" />
+          <EditButton />
         </Datagrid>
       </List>
     )
@@ -174,8 +190,6 @@ export const TicketEdit = () => {
   //¿const isLoading = useAuthState();
   //if(isLoading) return <Loading />;
   const [clasificacionSeleccionada, setClasificacionSeleccionada] = useState<string>("");
-  const [estadoSeleccionado, setEstadoSeleccionado] = useState<string>("Abierto");
-  const [fechaCierre, setFechaCierre] = useState<string | null>(null);
   const [incidenciasFiltradas, setIncidenciasFiltradas] = useState< { id: string; nombre: string; categoria: string }[] >([]);
 
 
@@ -197,17 +211,6 @@ export const TicketEdit = () => {
       setIncidenciasFiltradas([]);
     }
   }, [clasificacionSeleccionada]);
-
-  useEffect(() => {
-    console.log("estadoSeleccionado: ", estadoSeleccionado);
-    if (estadoSeleccionado === 'Cerrado') {
-      const currentDate = new Date().toISOString().split('T')[0];
-      console.log("currentDate: ", currentDate);
-      setFechaCierre(currentDate);
-    } else {
-      setFechaCierre('');
-    }
-  }, [estadoSeleccionado]);
 
   return (
 
@@ -252,28 +255,11 @@ export const TicketEdit = () => {
             { id: 'En_Proceso', name: 'En Proceso' },
             { id: 'Cerrado', name: 'Cerrado' },
           ]}
-          value={estadoSeleccionado} // Get the selected value
-          onChange={(e) => {
-            console.log("e.target.value: ", e.target.value)
-            setEstadoSeleccionado(e.target.value)
-          }
-          } // Update the state
         />
       </SimpleForm>
     </Edit>
   );
 };
-
-//Barra de abajo en edit para regresar a /tickets
-// export const CardEditCustom = () => {
-//   const record = useRecordContext();
-//   return (
-//     <Box display="flex" justifyContent="space-between">
-//       <CardHeader title={<TicketTitle />} />
-//       <EditButton basePath="/tickets" record={record} />
-//     </Box>
-//   );
-// }
 
 export const TicketCreate = () => {
   // Use the useState hook to manage user data and loading state

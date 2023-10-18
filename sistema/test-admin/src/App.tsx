@@ -36,23 +36,6 @@ export const App = () => (
       icon={PostIcon}
       show={TicketShow}
     />
-    <Resource
-      options={{ label: "Usuarios" }}
-      name="users"
-      list={UserList}
-      show={ShowGuesser}
-      create={UserCreateForm}
-      recordRepresentation="name"
-      icon={UserIcon}
-    />
-    <Resource
-      name="albums"
-      list={AlbumList}
-      edit={AlbumEdit}
-      create={AlbumCreate}
-      icon={PostIcon}
-    />
-
 
   <CustomRoutes>
           <Route path="/registrarse"  element={<Registrarse />}/>

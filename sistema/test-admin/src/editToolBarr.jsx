@@ -9,7 +9,7 @@ export const CardEditCustomTool = () => {
     navigate("/tickets");
   };
   return(<Toolbar>
-      <Button label="Back" icon={<ArrowBackIcon/>} onClick={handleEventRedirect}/>
-      <SaveButton label="Save" icon={<SaveIcon/>}/>
-    </Toolbar>);
+    <Button label="Back" icon={<ArrowBackIcon/>} onClick={handleEventRedirect}/>
+    <SaveButton label="Save" icon={<SaveIcon/>}/>
+    </Toolbar>);
 };
