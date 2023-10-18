@@ -1,7 +1,7 @@
 const authProvider={
     login: async ({ username , password }) => {
-         const request = new Request('http://localhost:1337/login', {
-        //  const request = new Request('https://localhost:1337/login', {
+        //  const request = new Request('http://localhost:1337/login', {
+         const request = new Request('https://localhost:1337/login', {
             method: 'POST',
             body: JSON.stringify({ "username":username, "password": password }),
             headers: new Headers({ 'Content-Type': 'application/json' }),
@@ -50,7 +50,7 @@ const authProvider={
     },
 
     getUser: async () => {
-        const request = new Request('http://localhost:1337/getUser', {
+        const request = new Request('https://localhost:1337/getUser', {
             method: 'GET',
             headers: new Headers({ 'Content-Type': 'application/json', "Authentication": localStorage.getItem("auth") }),
         });

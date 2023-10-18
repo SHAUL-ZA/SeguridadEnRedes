@@ -233,13 +233,13 @@ app.post("/login", async(req, res)=>{
 //     }
 // })
 
-app.listen(1337, ()=>{
-    connectDB();
-    console.log("Servidor escuchando en puerto 1337")
-})
-
-//Cambiarlo a https
-// https.createServer({cert: fs.readFileSync("backend.cer"), key: fs.readFileSync("backend.key")}, app).listen(1337, ()=>{
+// app.listen(1337, ()=>{
 //     connectDB();
 //     console.log("Servidor escuchando en puerto 1337")
 // })
+
+// Cambiarlo a https
+https.createServer({cert: fs.readFileSync("backend.cer"), key: fs.readFileSync("backend.key")}, app).listen(1337, ()=>{
+    connectDB();
+    console.log("Servidor escuchando en puerto 1337")
+})
