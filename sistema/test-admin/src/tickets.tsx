@@ -41,8 +41,12 @@ const TicketTitle = () => {
 
 const postFilters = [
   <TextInput source="usuario" label="Buscar usuario" alwaysOn />,
-  <ReferenceInput source="id" label="id" reference="tickets" />,
-  <ReferenceInput source="Estado" label="Estado" reference="tickets"/>,
+  <NumberInput source="id" label="id"/>,
+  <SelectInput source="Estado" label="Estado" choices={[
+    { id: "Abierto", name: "Abierto" },
+    { id: "En_Proceso", name: "En Proceso" },
+    { id: "Cerrado", name: "Cerrado" },
+  ]}/>
 ];
 
 async function getUserData() {
@@ -132,7 +136,7 @@ export const TicketList = () => {
 
   if (!authUser) {
     // Handle the case where user data is not available or an error occurred
-    return <div>Error fetching user data</div>;
+    return <div>Se ha expirado tu sesión en por México Fundación. Favor de iniciar sesión nuevamente.</div>;
   }
   console.log("authState: ", authUser);
   //Get the role of the current user
@@ -324,7 +328,7 @@ export const TicketCreate = () => {
 
   if (!authUser) {
     // Handle the case where user data is not available or an error occurred
-    return <div>Error fetching user data</div>;
+    return <div>Se ha expirado tu sesión en por México Fundación. Favor de iniciar sesión nuevamente.</div>;
   }
   
   return (
