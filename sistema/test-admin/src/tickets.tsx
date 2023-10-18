@@ -78,6 +78,7 @@ export const TicketShow = () => {
           <NumberField source="Propietario" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
           <TextField source="usuario" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
           <DateField source="Fecha_de_creacion"   format="LL" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
+          <DateField source="Fecha_de_cierre" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
           <TextField source="Aula"style={{fontSize: '1.2rem', fontWeight:'bold'}} />
           <TextField source="Clasificacion" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
           <TextField source="Incidencia" style={{fontSize: '1.2rem', fontWeight:'bold'}}/>
@@ -100,7 +101,7 @@ export const TicketShow = () => {
           fontWeight: 'bold',        
           }}/>
         </div>  
-      
+     
   </Show>
   )
 };
@@ -154,12 +155,13 @@ export const TicketList = () => {
   else if (authUser.rol == "coordinador_aula") {
     return (
       <List filters={postFilters}>
-        <Datagrid>
+        <Datagrid rowClick="show">
           <TextField source="id" />
-          <TextField source="Usuario" />
+          <TextField source="usuario" />
           <TextField source="Titulo" />
           <TextField source="Descripcion" />
           <TextField source="Nivel_de_Prioridad" reference="prioridad" />
+          <TextField source="Estado" />
           <EditButton />
         </Datagrid>
       </List>
@@ -168,9 +170,9 @@ export const TicketList = () => {
   else if (authUser.rol == "ejecutivo") {
     return (
       <List filters={postFilters}>
-        <Datagrid>
+        <Datagrid rowClick="show">
           <TextField source="id" />
-          <TextField source="Usuario" />
+          <TextField source="usuario" />
           <TextField source="Titulo" />
           <TextField source="Descripcion" />
           <TextField source="Nivel_de_Prioridad" reference="prioridad" />
